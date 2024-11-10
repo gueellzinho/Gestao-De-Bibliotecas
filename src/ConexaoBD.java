@@ -7,13 +7,10 @@ public class ConexaoBD {
     private static String USER;
     private static String PASSWORD;
 
-    public ConexaoBD(String url, String user, String pass){
-        URL = "jdbc:sqlserver://"+url+":1433;"+"databaseName="+ user +";integratedSecurity=false;encrypt=true;trustServerCertificate=true";
+    public static Connection getConnection(String url, String user, String bd, String password) throws SQLException{
+        URL = "jdbc:sqlserver://"+url+":1433;"+"databaseName="+ bd +";integratedSecurity=false;encrypt=true;trustServerCertificate=true";
         USER = user;
-        PASSWORD = pass;
-    }
-
-    public static Connection getConnection() throws SQLException {
+        PASSWORD = password;
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
