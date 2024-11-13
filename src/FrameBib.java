@@ -9,7 +9,8 @@ import java.sql.*;
 
 public class FrameBib extends JFrame {
     private static  JToolBar tbNavegacao;
-    private static JTextField txtServidor, txtBD, txtUser, txtPassword;
+    private static JTextField txtServidor, txtBD, txtUser;
+    private static JPasswordField txtPassword;
     //private static CALENDARIO ALGUMA COISA;
     private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes, btnConnect;
     private static JComboBox cbxBiblioteca;
@@ -87,11 +88,6 @@ public class FrameBib extends JFrame {
         tbNavegacao.add(btnDevolucoes);
         tbNavegacao.setVisible(false);
 
-        txtServidor = new JTextField();
-        txtBD = new JTextField();
-        txtUser = new JTextField();
-        txtPassword = new JTextField();
-
         cbxBiblioteca = new JComboBox();
 
         JPanel pnlCampos = new JPanel();
@@ -100,7 +96,7 @@ public class FrameBib extends JFrame {
         txtServidor = new JTextField();
         txtBD = new JTextField();
         txtUser  = new JTextField();
-        txtPassword  = new JTextField();
+        txtPassword  = new JPasswordField();
 
 
         pnlCampos.add(new JLabel("Servidor:"));			// 1, 1
