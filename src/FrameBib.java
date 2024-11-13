@@ -9,11 +9,14 @@ import java.sql.*;
 
 public class FrameBib extends JFrame {
     private static  JToolBar tbNavegacao;
-    private static JTextField txtServidor, txtBD, txtUser, txtPassword;
+    private static String txtIdBib, txtNomeBib;
+    private static JTextField txtServidor, txtBD, txtUser, txtBib;
+    private static JPasswordField txtPassword;
     //private static CALENDARIO ALGUMA COISA;
     private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes, btnConnect;
     private static JComboBox cbxBiblioteca;
     static private Connection conexaoDados = null;
+    private static ResultSet dadosDoSelect;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -86,12 +89,6 @@ public class FrameBib extends JFrame {
         tbNavegacao.add(btnEmprestimos);
         tbNavegacao.add(btnDevolucoes);
         tbNavegacao.setVisible(false);
-
-        txtServidor = new JTextField();
-        txtBD = new JTextField();
-        txtUser = new JTextField();
-        txtPassword = new JTextField();
-
         cbxBiblioteca = new JComboBox();
 
         JPanel pnlCampos = new JPanel();
@@ -100,8 +97,8 @@ public class FrameBib extends JFrame {
         txtServidor = new JTextField();
         txtBD = new JTextField();
         txtUser  = new JTextField();
-        txtPassword  = new JTextField();
-
+        txtPassword  = new JPasswordField();
+        txtBib = new JTextField();
 
         pnlCampos.add(new JLabel("Servidor:"));			// 1, 1
         pnlCampos.add(txtServidor);					// 1, 2
@@ -113,6 +110,7 @@ public class FrameBib extends JFrame {
         pnlCampos.add(txtPassword);
         pnlCampos.add(new JLabel(""));
         pnlCampos.add(btnConnect);
+
 
         JPanel pnlBib = new JPanel();
         pnlBib.setLayout(new GridLayout(1, 2));
@@ -136,7 +134,10 @@ public class FrameBib extends JFrame {
                             String BD = txtBD.getText();
                             String Password = txtPassword.getText();
                             conexaoDados = ConexaoBD.getConnection(URL,User,BD,Password);
-                            // preencherDados();
+                            preencherDados();
+                            pnlCampos.setVisible(false);
+                            tbNavegacao.setVisible(true);
+                            pnlBib.setVisible(true);
                         }
                         catch (SQLException ex){
                             System.out.println(ex.getMessage());
@@ -145,4 +146,40 @@ public class FrameBib extends JFrame {
                 }
         );
     }
+    private static void preencherDados() {
+        String sql = "SELECT * FROM SisBib.Biblioteca order by idBiblioteca";
+        try {
+            Statement comandoSQL = conexaoDados.createStatement(
+                    ResultSet.TYPE_SCROLL_SENSITIVE,	// permite navegação
+                    ResultSet.CONCUR_UPDATABLE        // ResultSet é atualizável
+            );
+            try {
+                dadosDoSelect = comandoSQL.executeQuery(sql);
+                System.out.println(dadosDoSelect);
+                if (dadosDoSelect != null)
+                    while (dadosDoSelect.next()) {
+                        exibirRegistro();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Registro não encontrado!");
+                }
+            }
+            catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+    static private void exibirRegistro() throws SQLException
+    {
+        if (!dadosDoSelect.rowDeleted())
+        {
+            txtIdBib = dadosDoSelect.getString("idBiblioteca");
+            txtNomeBib = dadosDoSelect.getString("nome");
+            txtBib.setText(txtIdBib + " "+ txtNomeBib);
+            cbxBiblioteca.addItem(txtBib.getText());
+        }
+    }
+
 }
