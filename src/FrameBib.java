@@ -1,4 +1,3 @@
-import javax.sound.sampled.Line;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,12 +8,12 @@ import java.sql.*;
 
 public class FrameBib extends JFrame {
     private static  JToolBar tbNavegacao;
-    private static String txtIdBib, txtNomeBib;
     private static JTextField txtServidor, txtBD, txtUser, txtBib;
     private static JPasswordField txtPassword;
-    //private static CALENDARIO ALGUMA COISA;
+    //private static JDateChooser calCalendario;
     private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes, btnConnect;
     private static JComboBox cbxBiblioteca;
+    private static JTable tabLivros;
     static private Connection conexaoDados = null;
     private static ResultSet dadosDoSelect;
 
@@ -134,10 +133,10 @@ public class FrameBib extends JFrame {
                             String BD = txtBD.getText();
                             String Password = txtPassword.getText();
                             conexaoDados = ConexaoBD.getConnection(URL,User,BD,Password);
-                            preencherDados();
                             pnlCampos.setVisible(false);
                             tbNavegacao.setVisible(true);
                             pnlBib.setVisible(true);
+                            preencherDados();
                         }
                         catch (SQLException ex){
                             System.out.println(ex.getMessage());
@@ -145,7 +144,42 @@ public class FrameBib extends JFrame {
                     }
                 }
         );
+
+        btnLivros.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        String sql = "select * from SisBib.Livro order by codLivro";
+                        try{
+                            Statement comandoSQL = conexaoDados.createStatement(
+                                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                                    ResultSet.CONCUR_UPDATABLE
+                            );
+                            try{
+                                dadosDoSelect = comandoSQL.executeQuery(sql);
+                                if(dadosDoSelect != null){
+                                    String[] colunas = {"Código", "Título", "ID Autor", "ID Área"};
+                                    tabLivros = new JTable();
+                                    while(dadosDoSelect.next()){
+                                        exibirLivros();
+                                    }
+                                }
+                                else {
+                                    JOptionPane.showMessageDialog(null, "Registro não encontrado!");
+                                }
+                            }
+                            catch(SQLException exception){
+                                exception.printStackTrace();
+                            }
+                        }
+                        catch(SQLException exception){
+                            exception.printStackTrace();
+                        }
+                    }
+                }
+        );
     }
+
     private static void preencherDados() {
         String sql = "SELECT * FROM SisBib.Biblioteca order by idBiblioteca";
         try {
@@ -155,7 +189,6 @@ public class FrameBib extends JFrame {
             );
             try {
                 dadosDoSelect = comandoSQL.executeQuery(sql);
-                System.out.println(dadosDoSelect);
                 if (dadosDoSelect != null)
                     while (dadosDoSelect.next()) {
                         exibirRegistro();
@@ -171,14 +204,24 @@ public class FrameBib extends JFrame {
             ex.printStackTrace();
         }
     }
+
     static private void exibirRegistro() throws SQLException
     {
         if (!dadosDoSelect.rowDeleted())
         {
-            txtIdBib = dadosDoSelect.getString("idBiblioteca");
-            txtNomeBib = dadosDoSelect.getString("nome");
-            txtBib.setText(txtIdBib + " "+ txtNomeBib);
+            String txtIdBib = dadosDoSelect.getString("idBiblioteca");
+            String txtNomeBib = dadosDoSelect.getString("nome");
+            txtBib.setText(txtIdBib + " - "+ txtNomeBib);
             cbxBiblioteca.addItem(txtBib.getText());
+        }
+    }
+
+    private static void exibirLivros() throws SQLException{
+        if(!dadosDoSelect.rowDeleted()){
+            String txtCodLivro = dadosDoSelect.getString("codLivro");
+            String txtTitulo = dadosDoSelect.getString("titulo");
+            String idAutor = dadosDoSelect.getString("idAutor");
+            String idArea = dadosDoSelect.getString("idArea");
         }
     }
 
