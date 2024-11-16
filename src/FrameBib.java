@@ -191,7 +191,7 @@ public class FrameBib extends JFrame {
                 dadosDoSelect = comandoSQL.executeQuery(sql);
                 if (dadosDoSelect != null)
                     while (dadosDoSelect.next()) {
-                        exibirRegistro();
+                        exibirBibilotecas();
                 } else {
                     JOptionPane.showMessageDialog(null, "Registro não encontrado!");
                 }
@@ -205,7 +205,7 @@ public class FrameBib extends JFrame {
         }
     }
 
-    static private void exibirRegistro() throws SQLException
+    static private void exibirBibilotecas() throws SQLException
     {
         if (!dadosDoSelect.rowDeleted())
         {
