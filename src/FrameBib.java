@@ -8,44 +8,16 @@ import java.sql.*;
 
 public class FrameBib extends JFrame {
     private static  JToolBar tbNavegacao;
-    private static JTextField txtServidor, txtBD, txtUser, txtBib;
-    private static JPasswordField txtPassword;
     //private static JDateChooser calCalendario;
+    private static JTextField txtBib;
     private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes, btnConnect;
     private static JComboBox cbxBiblioteca;
     private static JTable tabLivros;
-    static private Connection conexaoDados = null;
+    static private Connection conexaoDados;
     private static ResultSet dadosDoSelect;
+    private static Container cntForm;
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                FrameBib form = new FrameBib();
-                form.setLocationRelativeTo(null);
-                // Adaptador para o fechamento da janela, matando o processo
-                form.addWindowListener(
-                        new WindowAdapter()
-                        {
-                            public void windowClosing (WindowEvent e)
-                            {
-                                try {
-                                    conexaoDados.close();
-                                } catch (SQLException ex) {
-                                    throw new RuntimeException(ex);
-                                }
-                                System.exit(0);
-                            }
-                        }
-                );
-
-                form.pack();
-                form.setVisible(true);
-            }
-        });
-    }
-
-    public FrameBib(){
+    public FrameBib(Connection cnxDados){
         setTitle("Sistema de Biblioteca");
         setSize(1000, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -77,9 +49,6 @@ public class FrameBib extends JFrame {
         btnDevolucoes.setFocusPainted(false);
         btnDevolucoes.setBorderPainted(false);
 
-        btnConnect = new JButton("Conectar");
-        btnConnect.setPreferredSize(new Dimension(90,30));
-
         tbNavegacao = new JToolBar();
         tbNavegacao.setLayout(new FlowLayout());
         tbNavegacao.setRollover(true);
@@ -87,63 +56,21 @@ public class FrameBib extends JFrame {
         tbNavegacao.add(btnExemplares);
         tbNavegacao.add(btnEmprestimos);
         tbNavegacao.add(btnDevolucoes);
-        tbNavegacao.setVisible(false);
         cbxBiblioteca = new JComboBox();
-
-        JPanel pnlCampos = new JPanel();
-        pnlCampos.setLayout(new GridLayout(5, 2));
-        pnlCampos.setPreferredSize(new Dimension(410,150));
-        txtServidor = new JTextField();
-        txtBD = new JTextField();
-        txtUser  = new JTextField();
-        txtPassword  = new JPasswordField();
-        txtBib = new JTextField();
-
-        pnlCampos.add(new JLabel("Servidor:"));			// 1, 1
-        pnlCampos.add(txtServidor);					// 1, 2
-        pnlCampos.add(new JLabel("Banco de Dados:"));				// 2, 1
-        pnlCampos.add(txtBD);					// 2, 2
-        pnlCampos.add(new JLabel("Usuário:"));		// 3, 1
-        pnlCampos.add(txtUser);					// 3, 2
-        pnlCampos.add(new JLabel("Senha:"));		// 4, 1
-        pnlCampos.add(txtPassword);
-        pnlCampos.add(new JLabel(""));
-        pnlCampos.add(btnConnect);
 
 
         JPanel pnlBib = new JPanel();
         pnlBib.setLayout(new GridLayout(1, 2));
         pnlBib.add(new JLabel("Biblioteca:"));
         pnlBib.add(cbxBiblioteca);
-        pnlBib.setVisible(false);
 
-        Container cntForm = getContentPane();
+        cntForm = getContentPane();
         cntForm.setLayout(new BorderLayout());
         cntForm.add(tbNavegacao , BorderLayout.NORTH);
-        cntForm.add(pnlCampos , BorderLayout.WEST);
         cntForm.add(pnlBib , BorderLayout.PAGE_END);
 
-        btnConnect.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            String URL = txtServidor.getText();
-                            String User = txtUser.getText();
-                            String BD = txtBD.getText();
-                            String Password = txtPassword.getText();
-                            conexaoDados = ConexaoBD.getConnection(URL,User,BD,Password);
-                            pnlCampos.setVisible(false);
-                            tbNavegacao.setVisible(true);
-                            pnlBib.setVisible(true);
-                            preencherDados();
-                        }
-                        catch (SQLException ex){
-                            System.out.println(ex.getMessage());
-                        }
-                    }
-                }
-        );
+        conexaoDados = cnxDados;
+        preencherDados();
 
         btnLivros.addActionListener(
                 new ActionListener() {
@@ -158,8 +85,6 @@ public class FrameBib extends JFrame {
                             try{
                                 dadosDoSelect = comandoSQL.executeQuery(sql);
                                 if(dadosDoSelect != null){
-                                    String[] colunas = {"Código", "Título", "ID Autor", "ID Área"};
-                                    tabLivros = new JTable();
                                     while(dadosDoSelect.next()){
                                         exibirLivros();
                                     }
@@ -209,6 +134,7 @@ public class FrameBib extends JFrame {
     {
         if (!dadosDoSelect.rowDeleted())
         {
+            txtBib = new JTextField();
             String txtIdBib = dadosDoSelect.getString("idBiblioteca");
             String txtNomeBib = dadosDoSelect.getString("nome");
             txtBib.setText(txtIdBib + " - "+ txtNomeBib);
@@ -216,13 +142,18 @@ public class FrameBib extends JFrame {
         }
     }
 
-    private static void exibirLivros() throws SQLException{
-        if(!dadosDoSelect.rowDeleted()){
+    private static void exibirLivros() throws SQLException {
+        String[] colunas = {"Código", "Título", "ID Autor", "ID Área"};
+        Object[][] dadosColunas = new Object[0][0];
+
+        if (!dadosDoSelect.rowDeleted()) {
             String txtCodLivro = dadosDoSelect.getString("codLivro");
             String txtTitulo = dadosDoSelect.getString("titulo");
             String idAutor = dadosDoSelect.getString("idAutor");
             String idArea = dadosDoSelect.getString("idArea");
+            dadosColunas = new Object[][]{{txtCodLivro, txtTitulo, idAutor, idArea}};
         }
+        tabLivros = new JTable(dadosColunas, colunas);
+        cntForm.add(tabLivros, BorderLayout.CENTER);
     }
-
 }
