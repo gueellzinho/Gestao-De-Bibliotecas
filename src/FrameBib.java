@@ -14,6 +14,7 @@ public class FrameBib extends JFrame {
     private static JComboBox cbxBiblioteca;
     private static JTable tabLivros;
     private static JPanel pnlLivros, pnlNavegacao, pnlConteudo;
+    private static JLabel lbCodLivro, lbTitulo, lbIdAutor, lbIdArea;
     static private Connection conexaoDados;
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
@@ -69,6 +70,10 @@ public class FrameBib extends JFrame {
         cntForm.add(pnlBib , BorderLayout.PAGE_END);
 
         pnlLivros = new JPanel();
+        lbCodLivro = new JLabel("Código Livro");
+        lbTitulo = new JLabel("Título");
+        lbIdAutor = new JLabel("ID Autor");
+        lbIdArea = new JLabel("ID Área");
         txtCodLivro = new JTextField();
         txtTitulo = new JTextField();
         txtIdAutor = new JTextField();
@@ -200,10 +205,10 @@ public class FrameBib extends JFrame {
 
     //tem que ajeitar isso aqui
     private static void escrevePnl(){
-        pnlLivros.add(new JLabel("Código Livro"));
-        pnlLivros.add(new JLabel("Título"));
-        pnlLivros.add(new JLabel("ID Autor"));
-        pnlLivros.add(new JLabel("ID Área"));
+        pnlLivros.add(lbCodLivro);
+        pnlLivros.add(lbTitulo);
+        pnlLivros.add(lbIdAutor);
+        pnlLivros.add(lbIdArea);
         pnlLivros.add(txtCodLivro);
         pnlLivros.add(txtTitulo);
         pnlLivros.add(txtIdAutor);
