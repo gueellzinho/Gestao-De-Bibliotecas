@@ -7,10 +7,12 @@ import java.sql.*;
 public class FrameBib extends JFrame {
     private static  JMenuBar menuNavegacao;
     //private static JDateChooser calCalendario;
-    private static JTextField txtBib;
-    private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes;
+    private static JTextField txtBib, txtCodLivro, txtTitulo, txtIdAutor, txtIdArea;
+    private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes,
+                           btnAnterior, btnProximo;
     private static JComboBox cbxBiblioteca;
     private static JTable tabLivros;
+    private static JPanel pnlLivros, pnlNavegacao, pnlConteudo;
     static private Connection conexaoDados;
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
@@ -65,6 +67,21 @@ public class FrameBib extends JFrame {
         cntForm.add(menuNavegacao, BorderLayout.NORTH);
         cntForm.add(pnlBib , BorderLayout.PAGE_END);
 
+        pnlLivros = new JPanel();
+        txtCodLivro = new JTextField();
+        txtTitulo = new JTextField();
+        txtIdAutor = new JTextField();
+        txtIdArea = new JTextField();
+
+        pnlNavegacao = new JPanel();
+        btnAnterior = new JButton("Anterior");
+        btnProximo = new JButton("Próximo");
+
+        pnlConteudo = new JPanel();
+        pnlConteudo.setLayout(new GridLayout(2, 1));
+
+        //String comboBox = String.valueOf(cbxBiblioteca.getSelectedItem());
+
         conexaoDados = cnxDados;
         preencherDados();
 
@@ -81,7 +98,10 @@ public class FrameBib extends JFrame {
                             try{
                                 dadosDoSelect = comandoSQL.executeQuery(sql);
                                 if(dadosDoSelect != null){
-                                    exibirLivros();
+                                    escrevePnl();
+                                    while(dadosDoSelect.next()){
+                                        exibirLivros();
+                                    }
                                 }
                                 else {
                                     JOptionPane.showMessageDialog(null, "Registro não encontrado!");
@@ -93,6 +113,44 @@ public class FrameBib extends JFrame {
                         }
                         catch(SQLException exception){
                             exception.printStackTrace();
+                        }
+                    }
+                }
+        );
+
+        btnAnterior.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            if (dadosDoSelect.previous()) {
+                                exibirLivros();
+                            }
+                            else {
+                                JOptionPane.showMessageDialog(null, "Não achou Registro anterior!");
+                            }
+                        }
+                        catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+        );
+
+        btnProximo.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            if (dadosDoSelect.next()) {
+                                exibirLivros();
+                            }
+                            else {
+                                JOptionPane.showMessageDialog(null, "Não achou próximo registro!");
+                            }
+                        }
+                        catch (SQLException ex) {
+                            ex.printStackTrace();
                         }
                     }
                 }
@@ -136,27 +194,29 @@ public class FrameBib extends JFrame {
         }
     }
 
-    private static void exibirLivros() throws SQLException {
-        String[] colunas = {"Código", "Título", "ID Autor", "ID Área"};
-        dadosDoSelect.last();
-        int totalRegistros = dadosDoSelect.getRow();
-        dadosDoSelect.beforeFirst();
-        Object[][] dadosColunas = new Object[totalRegistros][4];
-        int  i = 0;
-        while(dadosDoSelect.next()){
-            String txtCodLivro = dadosDoSelect.getString("codLivro");
-            String txtTitulo = dadosDoSelect.getString("titulo");
-            String idAutor = dadosDoSelect.getString("idAutor");
-            String idArea = dadosDoSelect.getString("idArea");
-            dadosColunas[i][0] = txtCodLivro;
-            dadosColunas[i][1] = txtTitulo;
-            dadosColunas[i][2] = idAutor;
-            dadosColunas[i][3] = idArea;
-            i++;
-        }
-        tabLivros = new JTable(dadosColunas, colunas);
-        JScrollPane barraRolagem = new JScrollPane(tabLivros);
-        cntForm.add(barraRolagem, BorderLayout.CENTER);
+    //tem que ajeitar isso aqui
+    private static void escrevePnl(){
+        pnlLivros.add(new JLabel("Código Livro"));
+        pnlLivros.add(new JLabel("Título"));
+        pnlLivros.add(new JLabel("ID Autor"));
+        pnlLivros.add(new JLabel("ID Área"));
+        pnlLivros.add(txtCodLivro);
+        pnlLivros.add(txtTitulo);
+        pnlLivros.add(txtIdAutor);
+        pnlLivros.add(txtIdArea);
+        pnlNavegacao.add(btnAnterior);
+        pnlNavegacao.add(btnProximo);
+        pnlLivros.setLayout(new GridLayout(2, 4));
+        pnlNavegacao.setLayout(new GridLayout(1, 2));
+        pnlConteudo.add(pnlLivros, BorderLayout.CENTER);
+        pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
+        cntForm.add(pnlConteudo, BorderLayout.CENTER);
+    }
 
+    private static void exibirLivros() throws SQLException{
+        txtCodLivro.setText(dadosDoSelect.getString("codLivro"));
+        txtTitulo.setText(dadosDoSelect.getString("titulo"));
+        txtIdAutor.setText(dadosDoSelect.getString("idAutor"));
+        txtIdArea.setText(dadosDoSelect.getString("idArea"));
     }
 }
