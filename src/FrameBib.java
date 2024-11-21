@@ -3,13 +3,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.lang.System;
 
 public class FrameBib extends JFrame {
     private static  JMenuBar menuNavegacao;
     //private static JDateChooser calCalendario;
     private static JTextField txtBib, txtCodLivro, txtTitulo, txtIdAutor, txtIdArea;
     private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes,
-                           btnAnterior, btnProximo;
+                           btnAnterior, btnProximo, btnBusca, btnIncluir, btnExcluir, btnAlterar;
     private static JComboBox cbxBiblioteca;
     private static JTable tabLivros;
     private static JPanel pnlLivros, pnlNavegacao, pnlConteudo;
@@ -19,7 +20,7 @@ public class FrameBib extends JFrame {
 
     public FrameBib(Connection cnxDados){
         setTitle("Sistema de Biblioteca");
-        setSize(800, 400);
+        setSize(600, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         btnLivros = new JButton("Livros");
         btnLivros.setPreferredSize(new Dimension(90,30));
@@ -76,6 +77,10 @@ public class FrameBib extends JFrame {
         pnlNavegacao = new JPanel();
         btnAnterior = new JButton("Anterior");
         btnProximo = new JButton("Próximo");
+        btnBusca = new JButton("Buscar");
+        btnAlterar = new JButton("Alterar");
+        btnIncluir = new JButton("Incluir");
+        btnExcluir = new JButton("Excluir");
 
         pnlConteudo = new JPanel();
         pnlConteudo.setLayout(new GridLayout(2, 1));
@@ -97,11 +102,10 @@ public class FrameBib extends JFrame {
                             );
                             try{
                                 dadosDoSelect = comandoSQL.executeQuery(sql);
-                                if(dadosDoSelect != null){
+                                if(dadosDoSelect != null && dadosDoSelect.next()){
+
                                     escrevePnl();
-                                    while(dadosDoSelect.next()){
-                                        exibirLivros();
-                                    }
+                                    exibirLivros();
                                 }
                                 else {
                                     JOptionPane.showMessageDialog(null, "Registro não encontrado!");
@@ -206,10 +210,15 @@ public class FrameBib extends JFrame {
         pnlLivros.add(txtIdArea);
         pnlNavegacao.add(btnAnterior);
         pnlNavegacao.add(btnProximo);
+        pnlNavegacao.add(btnBusca);
+        pnlNavegacao.add(btnIncluir);
+        pnlNavegacao.add(btnExcluir);
+        pnlNavegacao.add(btnAlterar);
         pnlLivros.setLayout(new GridLayout(2, 4));
         pnlNavegacao.setLayout(new GridLayout(1, 2));
         pnlConteudo.add(pnlLivros, BorderLayout.CENTER);
         pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
+        cntForm.remove(pnlConteudo);
         cntForm.add(pnlConteudo, BorderLayout.CENTER);
     }
 
@@ -218,5 +227,6 @@ public class FrameBib extends JFrame {
         txtTitulo.setText(dadosDoSelect.getString("titulo"));
         txtIdAutor.setText(dadosDoSelect.getString("idAutor"));
         txtIdArea.setText(dadosDoSelect.getString("idArea"));
+        cntForm.revalidate();
     }
 }
