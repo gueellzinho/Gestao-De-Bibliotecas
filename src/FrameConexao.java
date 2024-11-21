@@ -42,14 +42,13 @@ public class FrameConexao extends JFrame  {
 
     public FrameConexao(){
         setTitle("Conexão no Sistema de Biblioteca");
-        setSize(1000, 300);
         JPanel pnlCampos = new JPanel();
         pnlCampos.setLayout(new GridLayout(5, 2));
         pnlCampos.setPreferredSize(new Dimension(410,150));
-        txtServidor = new JTextField();
-        txtBD = new JTextField();
-        txtUser  = new JTextField();
-        txtPassword  = new JPasswordField();
+        txtServidor = new JTextField("regulus");
+        txtBD = new JTextField("BD24587");
+        txtUser  = new JTextField("BD24587");
+        txtPassword  = new JPasswordField("Miguel$PFC13579");
         btnConnect = new JButton("Conectar");
         btnConnect.setPreferredSize(new Dimension(90,30));
 
@@ -91,7 +90,6 @@ public class FrameConexao extends JFrame  {
                                     }
                             );
 
-                            Biblioteca.pack();
                             form.setVisible(false);
                             Biblioteca.setVisible(true);
                         }

@@ -2,15 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.sql.*;
 
 public class FrameBib extends JFrame {
-    private static  JToolBar tbNavegacao;
+    private static  JMenuBar menuNavegacao;
     //private static JDateChooser calCalendario;
     private static JTextField txtBib;
-    private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes, btnConnect;
+    private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes;
     private static JComboBox cbxBiblioteca;
     private static JTable tabLivros;
     static private Connection conexaoDados;
@@ -19,7 +17,7 @@ public class FrameBib extends JFrame {
 
     public FrameBib(Connection cnxDados){
         setTitle("Sistema de Biblioteca");
-        setSize(1000, 300);
+        setSize(800, 400);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         btnLivros = new JButton("Livros");
         btnLivros.setPreferredSize(new Dimension(90,30));
@@ -49,13 +47,11 @@ public class FrameBib extends JFrame {
         btnDevolucoes.setFocusPainted(false);
         btnDevolucoes.setBorderPainted(false);
 
-        tbNavegacao = new JToolBar();
-        tbNavegacao.setLayout(new FlowLayout());
-        tbNavegacao.setRollover(true);
-        tbNavegacao.add(btnLivros);
-        tbNavegacao.add(btnExemplares);
-        tbNavegacao.add(btnEmprestimos);
-        tbNavegacao.add(btnDevolucoes);
+        menuNavegacao = new JMenuBar();
+        menuNavegacao.add(btnLivros);
+        menuNavegacao.add(btnExemplares);
+        menuNavegacao.add(btnEmprestimos);
+        menuNavegacao.add(btnDevolucoes);
         cbxBiblioteca = new JComboBox();
 
 
@@ -66,7 +62,7 @@ public class FrameBib extends JFrame {
 
         cntForm = getContentPane();
         cntForm.setLayout(new BorderLayout());
-        cntForm.add(tbNavegacao , BorderLayout.NORTH);
+        cntForm.add(menuNavegacao, BorderLayout.NORTH);
         cntForm.add(pnlBib , BorderLayout.PAGE_END);
 
         conexaoDados = cnxDados;
@@ -85,9 +81,7 @@ public class FrameBib extends JFrame {
                             try{
                                 dadosDoSelect = comandoSQL.executeQuery(sql);
                                 if(dadosDoSelect != null){
-                                    while(dadosDoSelect.next()){
-                                        exibirLivros();
-                                    }
+                                    exibirLivros();
                                 }
                                 else {
                                     JOptionPane.showMessageDialog(null, "Registro não encontrado!");
@@ -144,16 +138,25 @@ public class FrameBib extends JFrame {
 
     private static void exibirLivros() throws SQLException {
         String[] colunas = {"Código", "Título", "ID Autor", "ID Área"};
-        Object[][] dadosColunas = new Object[0][0];
-
-        if (!dadosDoSelect.rowDeleted()) {
+        dadosDoSelect.last();
+        int totalRegistros = dadosDoSelect.getRow();
+        dadosDoSelect.beforeFirst();
+        Object[][] dadosColunas = new Object[totalRegistros][4];
+        int  i = 0;
+        while(dadosDoSelect.next()){
             String txtCodLivro = dadosDoSelect.getString("codLivro");
             String txtTitulo = dadosDoSelect.getString("titulo");
             String idAutor = dadosDoSelect.getString("idAutor");
             String idArea = dadosDoSelect.getString("idArea");
-            dadosColunas = new Object[][]{{txtCodLivro, txtTitulo, idAutor, idArea}};
+            dadosColunas[i][0] = txtCodLivro;
+            dadosColunas[i][1] = txtTitulo;
+            dadosColunas[i][2] = idAutor;
+            dadosColunas[i][3] = idArea;
+            i++;
         }
         tabLivros = new JTable(dadosColunas, colunas);
-        cntForm.add(tabLivros, BorderLayout.CENTER);
+        JScrollPane barraRolagem = new JScrollPane(tabLivros);
+        cntForm.add(barraRolagem, BorderLayout.CENTER);
+
     }
 }
