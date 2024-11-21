@@ -164,14 +164,108 @@ public class FrameBib extends JFrame {
                     }
                 }
         );
+        btnBusca.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try
+                {
+                    int posicaoAnterior = dadosDoSelect.getRow();
+                    String chaveProcurada = txtCodLivro.getText();
+                    dadosDoSelect.beforeFirst();
+                    boolean achou = false;
+                    while (! achou && dadosDoSelect.next())
+                    {
+                        if (dadosDoSelect.getString("codLivro").equals(chaveProcurada))
+                            achou = true;
+                    }
+                    if (!achou)
+                    {
+                        JOptionPane.showMessageDialog(null, "Registro não encontrado!");
+                        dadosDoSelect.absolute(posicaoAnterior);
+                    }
+                    exibirLivros();
+                }
+                catch (SQLException exception)
+                {
+                    throw new RuntimeException(exception);
+                }
+            }
+        });
+        btnIncluir.addActionListener(
+                new ActionListener()
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        try
+                        {
+                            dadosDoSelect.moveToInsertRow();
+                            dadosDoSelect.updateString("codLivro", txtCodLivro.getText());
+                            dadosDoSelect.updateString("titulo", txtTitulo.getText());
+                            dadosDoSelect.updateString("idAutor", txtIdAutor.getText());
+                            dadosDoSelect.updateString("idArea", txtIdArea.getText());
+                            dadosDoSelect.insertRow();
+                            JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
+                        }
+                        catch (SQLException ex)
+                        {
+                            System.out.println(ex.getMessage());
+                        }
+                    }
+                }
+        );
+        btnExcluir.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        try
+                        {
+                            if (JOptionPane.showConfirmDialog(
+                                    null, "Deseja realmente excluir?") ==
+                                    JOptionPane.OK_OPTION)
+                            {
+                                dadosDoSelect.deleteRow();
+                                JOptionPane.showMessageDialog(null, "Exclusão bem sucedida!");
+                                exibirLivros();
+                            }
+                        }
+                        catch (SQLException ex)
+                        {
+                            System.out.println(ex.getMessage());
+                        }
+                    }
+                }
+        );
+        btnAlterar.addActionListener(
+                new ActionListener()
+                {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        try
+                        {
+                            dadosDoSelect.updateString("titulo", txtTitulo.getText());
+                            dadosDoSelect.updateString("idAutor", txtIdAutor.getText());
+                            dadosDoSelect.updateString("idArea", txtIdArea.getText());
+                            dadosDoSelect.updateRow();
+                            JOptionPane.showMessageDialog(null,"Atualização bem sucedida!");
+                        }
+                        catch (SQLException ex)
+                        {
+                            System.out.println(ex.getMessage());
+                        }
+                    }
+                }
+        );
     }
 
     private static void preencherDados() {
         String sql = "SELECT * FROM SisBib.Biblioteca order by idBiblioteca";
         try {
             Statement comandoSQL = conexaoDados.createStatement(
-                    ResultSet.TYPE_SCROLL_SENSITIVE,	// permite navegação
-                    ResultSet.CONCUR_UPDATABLE        // ResultSet é atualizável
+                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE
             );
             try {
                 dadosDoSelect = comandoSQL.executeQuery(sql);
