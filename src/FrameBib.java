@@ -8,14 +8,13 @@ import java.lang.System;
 public class FrameBib extends JFrame {
     private static  JMenuBar menuNavegacao;
     //private static JDateChooser calCalendario;
-    private static JTextField txtBib, txtCodLivro, txtTitulo, txtIdAutor, txtIdArea,
-                              txtIdExemplar, txtIdBiblioteca, txtNumeroExemplar;
+    private static JTextField txtBib, txtCodLivro, txtTitulo, txtIdAutor, txtIdArea;
     private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes,
                            btnAnterior, btnProximo, btnBusca, btnIncluir, btnExcluir, btnAlterar;
     private static JComboBox cbxBiblioteca;
+    private static JTable tabLivros;
     private static JPanel pnlLivros, pnlNavegacao, pnlConteudo;
-    private static JLabel lbCodLivro, lbTitulo, lbIdAutor, lbIdArea,
-                          lbIdExemplar, lbidBiblioteca, lbNumeroExemplar;
+    private static JLabel lbCodLivro, lbTitulo, lbIdAutor, lbIdArea;
     static private Connection conexaoDados;
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
@@ -80,14 +79,6 @@ public class FrameBib extends JFrame {
         txtIdAutor = new JTextField();
         txtIdArea = new JTextField();
 
-        pnlExemplares = new JPanel();
-        lbIdExemplar = new JLabel("ID Exemplar");
-        lbidBiblioteca = new JLabel("ID Biblioteca");
-        lbNumeroExemplar = new JLabel("Número Exemplar");
-        txtIdExemplar = new JTextField();
-        txtIdBiblioteca = new JTextField();
-        txtNumeroExemplar = new JTextField();
-
         pnlNavegacao = new JPanel();
         btnAnterior = new JButton("Anterior");
         btnProximo = new JButton("Próximo");
@@ -118,7 +109,7 @@ public class FrameBib extends JFrame {
                                 dadosDoSelect = comandoSQL.executeQuery(sql);
                                 if(dadosDoSelect != null && dadosDoSelect.next()){
 
-                                    escrevePnlLivros();
+                                    escrevePnl();
                                     exibirLivros();
                                 }
                                 else {
@@ -173,7 +164,6 @@ public class FrameBib extends JFrame {
                     }
                 }
         );
-
         btnBusca.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -201,7 +191,6 @@ public class FrameBib extends JFrame {
                 }
             }
         });
-
         btnIncluir.addActionListener(
                 new ActionListener()
                 {
@@ -269,38 +258,6 @@ public class FrameBib extends JFrame {
                     }
                 }
         );
-
-        btnExemplares.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String sql = "select * from SisBib.Exemplar order by idExemplar";
-                        try{
-                            Statement comandoSQL = conexaoDados.createStatement(
-                                    ResultSet.TYPE_SCROLL_SENSITIVE,
-                                    ResultSet.CONCUR_UPDATABLE
-                            );
-                            try{
-                                dadosDoSelect = comandoSQL.executeQuery(sql);
-                                if(dadosDoSelect != null && dadosDoSelect.next()){
-                                    escrevePnlExemplares();
-                                    exibirExemplares();
-                                }
-                                else {
-                                    JOptionPane.showMessageDialog(null, "Registro não encontrado!");
-                                }
-                            }
-                            catch(SQLException exception){
-                                exception.printStackTrace();
-                            }
-                        }
-                        catch(SQLException exception){
-                            exception.printStackTrace();
-                        }
-                    }
-                }
-        );
-    }
     }
 
     private static void preencherDados() {
@@ -341,7 +298,7 @@ public class FrameBib extends JFrame {
     }
 
     //tem que ajeitar isso aqui
-    private static void escrevePnlLivros(){
+    private static void escrevePnl(){
         pnlLivros.add(lbCodLivro);
         pnlLivros.add(lbTitulo);
         pnlLivros.add(lbIdAutor);
@@ -365,29 +322,10 @@ public class FrameBib extends JFrame {
     }
 
     private static void exibirLivros() throws SQLException{
-        if(!dadosDoSelect.rowDeleted()){
-            txtCodLivro.setText(dadosDoSelect.getString("codLivro"));
-            txtTitulo.setText(dadosDoSelect.getString("titulo"));
-            txtIdAutor.setText(dadosDoSelect.getString("idAutor"));
-            txtIdArea.setText(dadosDoSelect.getString("idArea"));
-            cntForm.revalidate();
-        }
-    }
-
-    private static void escrevePnlExemplares(){
-        pnlExemplares.add(lbIdExemplar);
-        pnlExemplares.add(lbidBiblioteca);
-        pnlExemplares.add(lbCodLivro);
-        pnlExemplares.add(lbnumeroExemplar);
-    }
-
-    private static void exibirExemplares() throws SQLException{
-        if(!dadosDoSelect.rowDeleted()){
-            txtIdExemplar.setText(dadosDoSelect.getString("idExemplar"));
-            txtIdBiblioteca.setText(dadosDoSelect.getString("idBiblioteca"));
-            txtCodLivro.setText(dadosDoSelect.getString("codLivro"));
-            txtNumeroExemplar.setText(dadosDoSelect.getString("numeroExemplar"));
-            cntForm.revalidate();
-        }
+        txtCodLivro.setText(dadosDoSelect.getString("codLivro"));
+        txtTitulo.setText(dadosDoSelect.getString("titulo"));
+        txtIdAutor.setText(dadosDoSelect.getString("idAutor"));
+        txtIdArea.setText(dadosDoSelect.getString("idArea"));
+        cntForm.revalidate();
     }
 }
