@@ -92,6 +92,7 @@ public class FrameConexao extends JFrame  {
                                     }
                             );
 
+                            form.disable();
                             form.setVisible(false);
                             Biblioteca.setVisible(true);
                         }
