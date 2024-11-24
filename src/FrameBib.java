@@ -217,19 +217,46 @@ public class FrameBib extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
-                        try
-                        {
-                            dadosDoSelect.moveToInsertRow();
-                            dadosDoSelect.updateString("idLeitor", txtIdLeitor.getText());
-                            dadosDoSelect.updateString("idExemplar", txtIdExemplar.getText());
-                            dadosDoSelect.updateString("dataEmprestimo", txtDataEmprestimo.getText());
-                            dadosDoSelect.updateString("devolucaoPrevista", txtDevolucaoPrevista.getText());
-                            dadosDoSelect.insertRow();
-                            JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
+                        String sql = "select * from SisBib.Exemplar where idBiblioteca = " + idBibliotecaEscolhida;
+                        try{
+                            Statement comandoSQL = conexaoDados.createStatement(
+                                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                                    ResultSet.CONCUR_UPDATABLE
+                            );
+                            try{
+                                dadosDoSelect = comandoSQL.executeQuery(sql);
+                                String exemplarProcurado = txtIdExemplar.getText();
+                                boolean achou = false;
+                                while(dadosDoSelect.next() && !achou){
+                                    String exemplarAtual = dadosDoSelect.getString("idExemplar");
+                                    if(exemplarProcurado.equals(exemplarAtual)){
+                                        achou = true;
+                                    }
+                                }
+                                if(achou){
+                                    try{
+                                        dadosDoSelect.moveToInsertRow();
+                                        dadosDoSelect.updateString("idLeitor", txtIdLeitor.getText());
+                                        dadosDoSelect.updateString("idExemplar", txtIdExemplar.getText());
+                                        dadosDoSelect.updateString("dataEmprestimo", txtDataEmprestimo.getText());
+                                        dadosDoSelect.updateString("devolucaoPrevista", txtDevolucaoPrevista.getText());
+                                        dadosDoSelect.insertRow();
+                                        JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
+                                    }
+                                    catch (SQLException ex){
+                                        out.println(ex.getMessage());
+                                    }
+                                }
+                                else{
+                                    JOptionPane.showMessageDialog(null, "Exemplar não encontrado na biblioteca!");
+                                }
+                            }
+                            catch(SQLException exception){
+                                exception.printStackTrace();
+                            }
                         }
-                        catch (SQLException ex)
-                        {
-                            out.println(ex.getMessage());
+                        catch(SQLException exception){
+                            exception.printStackTrace();
                         }
                     }
                 }
@@ -263,7 +290,10 @@ public class FrameBib extends JFrame {
     }
 
     private static void preencherEmprestimo(){
-        if(tpEmprestimo.getSelectedIndex() == 1){
+        if(tpEmprestimo.getSelectedIndex() == 0){
+            escrevePnlEmprestimos();
+        }
+        else if(tpEmprestimo.getSelectedIndex() == 1){
             String sql = "select * from SisBib.AtrasosLivros";
             try{
                 Statement comandoSQL = conexaoDados.createStatement(
@@ -283,9 +313,6 @@ public class FrameBib extends JFrame {
             catch(SQLException exception){
                 exception.printStackTrace();
             }
-        }
-        else if(tpEmprestimo.getSelectedIndex() == 0){
-            escrevePnlEmprestimos();
         }
     }
 
@@ -339,9 +366,9 @@ public class FrameBib extends JFrame {
         pnlEmprestimo.add(txtIdExemplar);       //2,2
         pnlEmprestimo.add(txtDataEmprestimo);   //2,3
         pnlEmprestimo.add(txtDevolucaoPrevista);//2,4
-        pnlEmprestimo.add(vazio);               //3,1
-        pnlEmprestimo.add(vazio);               //3,2
-        pnlEmprestimo.add(vazio);               //3,3
+//        pnlEmprestimo.add(vazio);               //3,1
+//        pnlEmprestimo.add(vazio);               //3,2
+//        pnlEmprestimo.add(vazio);               //3,3
         pnlEmprestimo.add(btnIncluir);          //3,4
         pnlConteudo.setLayout(new GridLayout(1, 1));
         pnlConteudo.add(tpEmprestimo, BorderLayout.CENTER);
