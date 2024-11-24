@@ -15,37 +15,21 @@ import static java.lang.System.out;
 public class FrameBib extends JFrame {
     private static  JMenuBar menuNavegacao;
     //private static JDateChooser calCalendario;
-    private static JTextField txtBib, txtCodLivro, txtTitulo, txtIdAutor, txtIdArea,
-<<<<<<< Updated upstream
-                              txtIdExemplar, txtIdBiblioteca, txtNumeroExemplar;
-    private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes;
-    private static JComboBox cbxBiblioteca;
-    private static JPanel pnlExemplares, pnlNavegacao, pnlConteudo;
-    private static JLabel lbCodLivro, lbIdExemplar, lbIdBiblioteca,
-                          lbNumeroExemplar;
-=======
-                              txtIdExemplar, txtIdBiblioteca, txtNumeroExemplar,
-                              txtIdLeitor, txtNomeLeitor, txtDevolucaoPrevista;
-    private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes,
-                           btnAnterior, btnProximo, btnBusca, btnIncluir, btnExcluir, btnAlterar;
+    private static JTextField txtBib, txtIdLeitor, txtDevolucaoPrevista, txtIdExemplar, txtDataEmprestimo;
+    private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes, btnIncluir;
     private static JComboBox cbxBiblioteca;
     private static JTabbedPane tpEmprestimo;
     private static JTable tabAtrasos;
->>>>>>> Stashed changes
+    private static JPanel pnlNavegacao, pnlConteudo, pnlEmprestimo, pnlAtrasos;
     static private Connection conexaoDados;
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
     private static int idBibliotecaEscolhida = 1;
 
     //TODAS ESSA VARIAVEIS PARA BAIXO PODEM SUMIR QUANDO SEPARAR OS ARQUIVOS
-    private static JPanel pnlLivros, pnlExemplares, pnlNavegacao, pnlConteudo, pnlEmprestimos, pnlAtrasos;
-    private static JLabel lbCodLivro, lbTitulo, lbIdAutor, lbIdArea, lbIdExemplar, lbIdBiblioteca,
-                          lbNumeroExemplar, lbIdLeitor, lbNomeLeitor, lbDevolucaoPrevista;
-    private enum Tela {INICIAL, LIVROS, EXEMPLARES, EMPRESTIMOS, DEVOLUCOES}
-    private static Tela estado;
+    private static JLabel lbIdLeitor, lbIdExemplar, lbDataEmprestimo, lbDevolucaoPrevista, vazio;
 
     public FrameBib(Connection cnxDados){
-        estado = Tela.INICIAL;
         setTitle("Sistema de Biblioteca");
         setSize(600, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -84,7 +68,6 @@ public class FrameBib extends JFrame {
         menuNavegacao.add(btnDevolucoes);
         cbxBiblioteca = new JComboBox();
 
-
         JPanel pnlBib = new JPanel();
         pnlBib.setLayout(new GridLayout(1, 2));
         pnlBib.add(new JLabel("Biblioteca:"));
@@ -95,58 +78,26 @@ public class FrameBib extends JFrame {
         cntForm.add(menuNavegacao, BorderLayout.NORTH);
         cntForm.add(pnlBib , BorderLayout.PAGE_END);
 
-<<<<<<< Updated upstream
-=======
-        pnlLivros   = new JPanel();
-        lbCodLivro  = new JLabel("Código Livro");
-        lbTitulo    = new JLabel("Título");
-        lbIdAutor   = new JLabel("ID Autor");
-        lbIdArea    = new JLabel("ID Área");
-        txtCodLivro = new JTextField();
-        txtTitulo   = new JTextField();
-        txtIdAutor  = new JTextField();
-        txtIdArea   = new JTextField();
-
-        pnlExemplares       = new JPanel();
-        lbIdExemplar        = new JLabel("ID Exemplar");
-        lbIdBiblioteca      = new JLabel("ID Biblioteca");
-        lbNumeroExemplar    = new JLabel("Número Exemplar");
-        txtIdExemplar       = new JTextField();
-        txtIdBiblioteca     = new JTextField();
-        txtNumeroExemplar   = new JTextField();
-
-        pnlEmprestimos = new JPanel();
-        pnlAtrasos     = new JPanel();
-        tpEmprestimo   = new JTabbedPane();
-        tpEmprestimo.add("Empréstimo", pnlEmprestimos);
+        pnlEmprestimo = new JPanel();
+        pnlAtrasos    = new JPanel();
+        tpEmprestimo  = new JTabbedPane();
+        tpEmprestimo.add("Empréstimo", pnlEmprestimo);
         tpEmprestimo.add("Atrasos", pnlAtrasos);
+        pnlEmprestimo.setLayout(new GridLayout(2, 4));
         lbIdLeitor           = new JLabel("ID Leitor");
-        lbNomeLeitor         = new JLabel("Nome Leitor");
+        lbIdExemplar         = new JLabel("ID Exemplar");
+        lbDataEmprestimo     = new JLabel("Data Empréstimo");
         lbDevolucaoPrevista  = new JLabel("Devolução Prevista");
         txtIdLeitor          = new JTextField();
-        txtNomeLeitor        = new JTextField();
+        txtIdExemplar        = new JTextField();
+        txtDataEmprestimo    = new JTextField();
         txtDevolucaoPrevista = new JTextField();
 
-        pnlNavegacao = new JPanel();
-        btnAnterior  = new JButton("Anterior");
-        btnProximo   = new JButton("Próximo");
-        btnBusca     = new JButton("Buscar");
-        btnAlterar   = new JButton("Alterar");
+        vazio = new JLabel("");
+
         btnIncluir   = new JButton("Incluir");
-        btnExcluir   = new JButton("Excluir");
 
-        pnlNavegacao.add(btnAnterior);
-        pnlNavegacao.add(btnProximo);
-        pnlNavegacao.add(btnBusca);
-        pnlNavegacao.add(btnIncluir);
-        pnlNavegacao.add(btnExcluir);
-        pnlNavegacao.add(btnAlterar);
-        pnlNavegacao.setLayout(new GridLayout(1, 2, 10, 10));
-        pnlNavegacao.setBorder(new EmptyBorder(10, 10, 10, 10));
-
->>>>>>> Stashed changes
         pnlConteudo = new JPanel();
-        pnlConteudo.setLayout(new GridLayout(2, 1));
 
         conexaoDados = cnxDados;
         preencherBibliotecas();
@@ -165,7 +116,6 @@ public class FrameBib extends JFrame {
                 new ActionListener(){
                     @Override
                     public void actionPerformed(ActionEvent e){
-                        estado = Tela.LIVROS;
                         String sql = "select * from SisBib.Livro order by codLivro";
                         try{
                             Statement comandoSQL = conexaoDados.createStatement(
@@ -207,7 +157,6 @@ public class FrameBib extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e){
-                        estado = Tela.EXEMPLARES;
                         String sql = "select * from SisBib.Exemplar where idBiblioteca = " + idBibliotecaEscolhida + "order by idExemplar";
                         try{
                             Statement comandoSQL = conexaoDados.createStatement(
@@ -244,15 +193,12 @@ public class FrameBib extends JFrame {
                     }
                 }
         );
-<<<<<<< Updated upstream
-=======
 
         btnEmprestimos.addActionListener(
                 new ActionListener() {
                     @Override
-                    public void actionPerformed(ActionEvent e){
-                        estado = Tela.EMPRESTIMOS;
-                        preencherEmprestimos();
+                    public void actionPerformed(ActionEvent e) {
+                        preencherEmprestimo();
                     }
                 }
         );
@@ -261,83 +207,8 @@ public class FrameBib extends JFrame {
                 new ChangeListener(){
                     @Override
                     public void stateChanged(ChangeEvent e){
-                        preencherEmprestimos();
+                        preencherEmprestimo();
                     }
-        });
-
-        btnAnterior.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            if (dadosDoSelect.previous()) {
-                                switch(estado){
-                                    case LIVROS: exibirLivros(); break;
-                                    case EXEMPLARES: exibirExemplares(); break;
-                                    case EMPRESTIMOS: exibirEmprestimos();break;
-                                }
-                            }
-                            else {
-                                JOptionPane.showMessageDialog(null, "Não achou registro anterior!");
-                            }
-                        }
-                        catch (SQLException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-        );
-
-        btnProximo.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            if (dadosDoSelect.next()) {
-                                switch(estado){
-                                    case LIVROS: exibirLivros(); break;
-                                    case EXEMPLARES: exibirExemplares(); break;
-                                    case EMPRESTIMOS: exibirEmprestimos();break;
-                                }
-                            }
-                            else {
-                                JOptionPane.showMessageDialog(null, "Não achou próximo registro!");
-                            }
-                        }
-                        catch (SQLException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-        );
-
-        btnBusca.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try
-                {
-                    int posicaoAnterior = dadosDoSelect.getRow();
-                    String chaveProcurada = txtCodLivro.getText();
-                    dadosDoSelect.beforeFirst();
-                    boolean achou = false;
-                    while (! achou && dadosDoSelect.next())
-                    {
-                        if (dadosDoSelect.getString("codLivro").equals(chaveProcurada))
-                            achou = true;
-                    }
-                    if (!achou)
-                    {
-                        JOptionPane.showMessageDialog(null, "Livro não encontrado!");
-                        dadosDoSelect.absolute(posicaoAnterior);
-                    }
-                    exibirLivros();
-                }
-                catch (SQLException exception)
-                {
-                    throw new RuntimeException(exception);
-                }
-            }
         });
 
         btnIncluir.addActionListener(
@@ -349,10 +220,10 @@ public class FrameBib extends JFrame {
                         try
                         {
                             dadosDoSelect.moveToInsertRow();
-                            dadosDoSelect.updateString("codLivro", txtCodLivro.getText());
-                            dadosDoSelect.updateString("titulo", txtTitulo.getText());
-                            dadosDoSelect.updateString("idAutor", txtIdAutor.getText());
-                            dadosDoSelect.updateString("idArea", txtIdArea.getText());
+                            dadosDoSelect.updateString("idLeitor", txtIdLeitor.getText());
+                            dadosDoSelect.updateString("idExemplar", txtIdExemplar.getText());
+                            dadosDoSelect.updateString("dataEmprestimo", txtDataEmprestimo.getText());
+                            dadosDoSelect.updateString("devolucaoPrevista", txtDevolucaoPrevista.getText());
                             dadosDoSelect.insertRow();
                             JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
                         }
@@ -364,52 +235,6 @@ public class FrameBib extends JFrame {
                 }
         );
 
-        btnExcluir.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        try
-                        {
-                            if (JOptionPane.showConfirmDialog(
-                                    null, "Deseja realmente excluir?") ==
-                                    JOptionPane.OK_OPTION)
-                            {
-                                dadosDoSelect.deleteRow();
-                                JOptionPane.showMessageDialog(null, "Exclusão bem sucedida!");
-                                exibirLivros();
-                            }
-                        }
-                        catch (SQLException ex)
-                        {
-                            out.println(ex.getMessage());
-                        }
-                    }
-                }
-        );
-
-        btnAlterar.addActionListener(
-                new ActionListener()
-                {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        try
-                        {
-                            dadosDoSelect.updateString("titulo", txtTitulo.getText());
-                            dadosDoSelect.updateString("idAutor", txtIdAutor.getText());
-                            dadosDoSelect.updateString("idArea", txtIdArea.getText());
-                            dadosDoSelect.updateRow();
-                            JOptionPane.showMessageDialog(null,"Atualização bem sucedida!");
-                        }
-                        catch (SQLException ex)
-                        {
-                            out.println(ex.getMessage());
-                        }
-                    }
-                }
-        );
->>>>>>> Stashed changes
     }
 
     private static void preencherBibliotecas() {
@@ -437,7 +262,7 @@ public class FrameBib extends JFrame {
         }
     }
 
-    private static void preencherEmprestimos(){
+    private static void preencherEmprestimo(){
         if(tpEmprestimo.getSelectedIndex() == 1){
             String sql = "select * from SisBib.AtrasosLivros";
             try{
@@ -459,40 +284,9 @@ public class FrameBib extends JFrame {
                 exception.printStackTrace();
             }
         }
-        else{
-            String sql = "select e.idLeitor, le.nome, e.idExemplar, l.titulo, e.devolucaoPrevista " +
-                    "     from SisBib.Emprestimo e" +
-                    "     inner join SisBib.Leitor le" +
-                    "           on e.idLeitor = le.idLeitor" +
-                    "     inner join SisBib.Exemplar ex" +
-                    "           on e.idExemplar = ex.idExemplar" +
-                    "     inner join SisBib.Livro l" +
-                    "           on ex.codLivro = l.codLivro" +
-                    "     where ex.idBiblioteca = " + idBibliotecaEscolhida;
-            try{
-                Statement comandoSQL = conexaoDados.createStatement(
-                        ResultSet.TYPE_SCROLL_SENSITIVE,
-                        ResultSet.CONCUR_UPDATABLE
-                );
-                try{
-                    dadosDoSelect = comandoSQL.executeQuery(sql);
-                    if(dadosDoSelect != null && dadosDoSelect.next()){
-                        escrevePnlEmprestimos();
-                        exibirEmprestimos();
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null, "Registros de empréstimos não encontrados!");
-                    }
-                }
-                catch(SQLException exception){
-                    exception.printStackTrace();
-                }
-            }
-            catch(SQLException exception){
-                exception.printStackTrace();
-            }
+        else if(tpEmprestimo.getSelectedIndex() == 0){
+            escrevePnlEmprestimos();
         }
-        cntForm.revalidate();
     }
 
     static private void exibirBibilotecas() throws SQLException
@@ -504,38 +298,6 @@ public class FrameBib extends JFrame {
             String txtNomeBib = dadosDoSelect.getString("nome");
             txtBib.setText(txtIdBib + " - "+ txtNomeBib);
             cbxBiblioteca.addItem(txtBib.getText());
-        }
-    }
-<<<<<<< Updated upstream
-=======
-
-    private static void exibirLivros() throws SQLException{
-        if(!dadosDoSelect.rowDeleted()){
-            txtCodLivro.setText(dadosDoSelect.getString("codLivro"));
-            txtTitulo.setText(dadosDoSelect.getString("titulo"));
-            txtIdAutor.setText(dadosDoSelect.getString("idAutor"));
-            txtIdArea.setText(dadosDoSelect.getString("idArea"));
-            cntForm.revalidate();
-        }
-    }
-
-    private static void exibirExemplares() throws SQLException{
-        if(!dadosDoSelect.rowDeleted()){
-            txtIdExemplar.setText(dadosDoSelect.getString("idExemplar"));
-            txtIdBiblioteca.setText(dadosDoSelect.getString("idBiblioteca"));
-            txtCodLivro.setText(dadosDoSelect.getString("codLivro"));
-            txtNumeroExemplar.setText(dadosDoSelect.getString("numeroExemplar"));
-            cntForm.revalidate();
-        }
-    }
-
-    private static void exibirEmprestimos() throws SQLException{
-        if(!dadosDoSelect.rowDeleted()){
-            txtIdLeitor.setText(dadosDoSelect.getString("idLeitor"));
-            txtNomeLeitor.setText(dadosDoSelect.getString("nome"));
-            txtIdExemplar.setText(dadosDoSelect.getString("idExemplar"));
-            txtTitulo.setText(dadosDoSelect.getString("titulo"));
-            txtDevolucaoPrevista.setText(dadosDoSelect.getString("devolucaoPrevista"));
         }
     }
 
@@ -566,58 +328,24 @@ public class FrameBib extends JFrame {
         tabAtrasos = new JTable(dadosColunas, colunas);
         JScrollPane barraRolagem = new JScrollPane(tabAtrasos);
         pnlAtrasos.add(barraRolagem, BorderLayout.CENTER);
-        pnlConteudo.remove(pnlNavegacao);
-    }
-
-    //PODE SUMIR QUANDO MUDAR AS TELAS
-    private static void escrevePnlLivros(){
-        pnlLivros.add(lbCodLivro);
-        pnlLivros.add(lbTitulo);
-        pnlLivros.add(lbIdAutor);
-        pnlLivros.add(lbIdArea);
-        pnlLivros.add(txtCodLivro);
-        pnlLivros.add(txtTitulo);
-        pnlLivros.add(txtIdAutor);
-        pnlLivros.add(txtIdArea);
-        pnlLivros.setLayout(new GridLayout(2, 4));
-        pnlConteudo.add(pnlLivros, BorderLayout.CENTER);
-        pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
-        cntForm.remove(pnlConteudo);
-        cntForm.add(pnlConteudo, BorderLayout.CENTER);
-    }
-
-    private static void escrevePnlExemplares(){
-        pnlExemplares.add(lbIdExemplar);
-        pnlExemplares.add(lbIdBiblioteca);
-        pnlExemplares.add(lbCodLivro);
-        pnlExemplares.add(lbNumeroExemplar);
-        pnlExemplares.add(txtIdExemplar);
-        pnlExemplares.add(txtIdBiblioteca);
-        pnlExemplares.add(txtCodLivro);
-        pnlExemplares.add(txtNumeroExemplar);
-        pnlExemplares.setLayout(new GridLayout(2,4));
-        pnlConteudo.add(pnlExemplares, BorderLayout.CENTER);
-        pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
-        cntForm.remove(pnlConteudo);
-        cntForm.add(pnlConteudo, BorderLayout.CENTER);
     }
 
     private static void escrevePnlEmprestimos(){
-        pnlEmprestimos.add(lbIdLeitor);         //1, 1
-        pnlEmprestimos.add(lbNomeLeitor);       //1, 2
-        pnlEmprestimos.add(lbIdExemplar);       //1, 3
-        pnlEmprestimos.add(lbTitulo);           //1, 4
-        pnlEmprestimos.add(lbDevolucaoPrevista);//1, 5
-        pnlEmprestimos.add(txtIdLeitor);        //2, 1
-        pnlEmprestimos.add(txtNomeLeitor);      //2, 2
-        pnlEmprestimos.add(txtIdExemplar);      //2, 3
-        pnlEmprestimos.add(txtTitulo);          //2, 4
-        pnlEmprestimos.add(txtDevolucaoPrevista);//2, 5
-        pnlEmprestimos.setLayout(new GridLayout(2, 5));
+        pnlEmprestimo.add(lbIdLeitor);          //1,1
+        pnlEmprestimo.add(lbIdExemplar);        //1,2
+        pnlEmprestimo.add(lbDataEmprestimo);    //1,3
+        pnlEmprestimo.add(lbDevolucaoPrevista); //1,4
+        pnlEmprestimo.add(txtIdLeitor);         //2,1
+        pnlEmprestimo.add(txtIdExemplar);       //2,2
+        pnlEmprestimo.add(txtDataEmprestimo);   //2,3
+        pnlEmprestimo.add(txtDevolucaoPrevista);//2,4
+        pnlEmprestimo.add(vazio);               //3,1
+        pnlEmprestimo.add(vazio);               //3,2
+        pnlEmprestimo.add(vazio);               //3,3
+        pnlEmprestimo.add(btnIncluir);          //3,4
+        pnlConteudo.setLayout(new GridLayout(1, 1));
         pnlConteudo.add(tpEmprestimo, BorderLayout.CENTER);
-        pnlConteudo.add(pnlNavegacao, BorderLayout.SOUTH);
-        cntForm.remove(pnlConteudo);
-        cntForm.add(pnlConteudo, BorderLayout.CENTER);
+        cntForm.add(pnlConteudo);
+        cntForm.revalidate();
     }
->>>>>>> Stashed changes
 }
