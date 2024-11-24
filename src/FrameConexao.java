@@ -7,7 +7,9 @@ import java.awt.event.WindowEvent;
 import java.sql.*;
 
 public class FrameConexao extends JFrame  {
-    private static JTextField txtServidor, txtBD, txtUser;
+    private static JTextField txtServidor;
+    private static JTextField txtBD;
+    private static JTextField txtUser;
     private static JPasswordField txtPassword;
     static private Connection conexaoDados = null;
     private static JButton btnConnect;
@@ -45,23 +47,23 @@ public class FrameConexao extends JFrame  {
         JPanel pnlCampos = new JPanel();
         pnlCampos.setLayout(new GridLayout(5, 2));
         pnlCampos.setPreferredSize(new Dimension(410,150));
-        txtServidor = new JTextField("regulus");
+        txtServidor = new JTextField("regulus.cotuca.unicamp.br");
         txtBD = new JTextField("BD24587");
         txtUser  = new JTextField("BD24587");
         txtPassword  = new JPasswordField("Miguel$PFC13579");
         btnConnect = new JButton("Conectar");
         btnConnect.setPreferredSize(new Dimension(90,30));
 
-        pnlCampos.add(new JLabel("Servidor:"));			// 1, 1
-        pnlCampos.add(txtServidor);					// 1, 2
-        pnlCampos.add(new JLabel("Banco de Dados:"));				// 2, 1
-        pnlCampos.add(txtBD);					// 2, 2
-        pnlCampos.add(new JLabel("Usuário:"));		// 3, 1
-        pnlCampos.add(txtUser);					// 3, 2
-        pnlCampos.add(new JLabel("Senha:"));		// 4, 1
-        pnlCampos.add(txtPassword);
-        pnlCampos.add(new JLabel(""));
-        pnlCampos.add(btnConnect);
+        pnlCampos.add(new JLabel("Servidor:"));		 //1, 1
+        pnlCampos.add(txtServidor);					         //1, 2
+        pnlCampos.add(new JLabel("Banco de Dados:"));   //2, 1
+        pnlCampos.add(txtBD);					             //2, 2
+        pnlCampos.add(new JLabel("Usuário:"));		     //3, 1
+        pnlCampos.add(txtUser);					             //3, 2
+        pnlCampos.add(new JLabel("Senha:"));		     //4, 1
+        pnlCampos.add(txtPassword);                          //4, 2
+        pnlCampos.add(new JLabel(""));                  //5, 1
+        pnlCampos.add(btnConnect);                           //5, 2
 
         btnConnect.addActionListener(
                 new ActionListener() {

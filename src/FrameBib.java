@@ -3,23 +3,30 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
-import java.lang.System;
+import java.util.Objects;
+
+import static java.lang.System.out;
 
 public class FrameBib extends JFrame {
     private static  JMenuBar menuNavegacao;
     //private static JDateChooser calCalendario;
-    private static JTextField txtBib, txtCodLivro, txtTitulo, txtIdAutor, txtIdArea;
+    private static JTextField txtBib, txtCodLivro, txtTitulo, txtIdAutor, txtIdArea,
+                              txtIdExemplar, txtIdBiblioteca, txtNumeroExemplar;
     private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes,
                            btnAnterior, btnProximo, btnBusca, btnIncluir, btnExcluir, btnAlterar;
     private static JComboBox cbxBiblioteca;
-    private static JTable tabLivros;
-    private static JPanel pnlLivros, pnlNavegacao, pnlConteudo;
-    private static JLabel lbCodLivro, lbTitulo, lbIdAutor, lbIdArea;
+    private static JPanel pnlLivros, pnlExemplares, pnlNavegacao, pnlConteudo;
+    private static JLabel lbCodLivro, lbTitulo, lbIdAutor, lbIdArea, lbIdExemplar, lbIdBiblioteca,
+                          lbNumeroExemplar;
     static private Connection conexaoDados;
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
+    private static int idBibliotecaEscolhida = 1;
+    private enum Tela {INICIAL, LIVROS, EXEMPLARES, EMPRESTIMOS, DEVOLUCOES}        //apenas para diferenciar o estado,
+    private static Tela estado;                                                     //essas duas variaveis podem sumir quando separar as telas
 
     public FrameBib(Connection cnxDados){
+        estado = Tela.INICIAL;
         setTitle("Sistema de Biblioteca");
         setSize(600, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -69,36 +76,61 @@ public class FrameBib extends JFrame {
         cntForm.add(menuNavegacao, BorderLayout.NORTH);
         cntForm.add(pnlBib , BorderLayout.PAGE_END);
 
-        pnlLivros = new JPanel();
-        lbCodLivro = new JLabel("Código Livro");
-        lbTitulo = new JLabel("Título");
-        lbIdAutor = new JLabel("ID Autor");
-        lbIdArea = new JLabel("ID Área");
+        pnlLivros   = new JPanel();
+        lbCodLivro  = new JLabel("Código Livro");
+        lbTitulo    = new JLabel("Título");
+        lbIdAutor   = new JLabel("ID Autor");
+        lbIdArea    = new JLabel("ID Área");
         txtCodLivro = new JTextField();
-        txtTitulo = new JTextField();
-        txtIdAutor = new JTextField();
-        txtIdArea = new JTextField();
+        txtTitulo   = new JTextField();
+        txtIdAutor  = new JTextField();
+        txtIdArea   = new JTextField();
+
+        pnlExemplares       = new JPanel();
+        lbIdExemplar        = new JLabel("ID Exemplar");
+        lbIdBiblioteca      = new JLabel("ID Biblioteca");
+        lbNumeroExemplar    = new JLabel("Número Exemplar");
+        txtIdExemplar       = new JTextField();
+        txtIdBiblioteca     = new JTextField();
+        txtNumeroExemplar   = new JTextField();
 
         pnlNavegacao = new JPanel();
-        btnAnterior = new JButton("Anterior");
-        btnProximo = new JButton("Próximo");
-        btnBusca = new JButton("Buscar");
-        btnAlterar = new JButton("Alterar");
-        btnIncluir = new JButton("Incluir");
-        btnExcluir = new JButton("Excluir");
+        btnAnterior  = new JButton("Anterior");
+        btnProximo   = new JButton("Próximo");
+        btnBusca     = new JButton("Buscar");
+        btnAlterar   = new JButton("Alterar");
+        btnIncluir   = new JButton("Incluir");
+        btnExcluir   = new JButton("Excluir");
+
+        pnlNavegacao.add(btnAnterior);
+        pnlNavegacao.add(btnProximo);
+        pnlNavegacao.add(btnBusca);
+        pnlNavegacao.add(btnIncluir);
+        pnlNavegacao.add(btnExcluir);
+        pnlNavegacao.add(btnAlterar);
+        pnlNavegacao.setLayout(new GridLayout(1, 2));
 
         pnlConteudo = new JPanel();
         pnlConteudo.setLayout(new GridLayout(2, 1));
 
-        //String comboBox = String.valueOf(cbxBiblioteca.getSelectedItem());
-
         conexaoDados = cnxDados;
-        preencherDados();
+        preencherBibliotecas();
+
+        cbxBiblioteca.addActionListener(
+                new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e){
+                        String comboBox = Objects.requireNonNull(cbxBiblioteca.getSelectedItem()).toString();
+                        idBibliotecaEscolhida = Integer.parseInt(comboBox.substring(0, 1));
+                    }
+                }
+        );
 
         btnLivros.addActionListener(
-                new ActionListener() {
+                new ActionListener(){
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent e){
+                        estado = Tela.LIVROS;
                         String sql = "select * from SisBib.Livro order by codLivro";
                         try{
                             Statement comandoSQL = conexaoDados.createStatement(
@@ -109,11 +141,43 @@ public class FrameBib extends JFrame {
                                 dadosDoSelect = comandoSQL.executeQuery(sql);
                                 if(dadosDoSelect != null && dadosDoSelect.next()){
 
-                                    escrevePnl();
+                                    escrevePnlLivros();
                                     exibirLivros();
                                 }
                                 else {
-                                    JOptionPane.showMessageDialog(null, "Registro não encontrado!");
+                                    JOptionPane.showMessageDialog(null, "Registros de livros não encontrados!");
+                                }
+                            }
+                            catch(SQLException exception){
+                                exception.printStackTrace();
+                            }
+                        }
+                        catch(SQLException exception){
+                            exception.printStackTrace();
+                        }
+                    }
+                }
+        );
+
+        btnExemplares.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e){
+                        estado = Tela.EXEMPLARES;
+                        String sql = "select * from SisBib.Exemplar where idBiblioteca = " + idBibliotecaEscolhida + "order by idExemplar";
+                        try{
+                            Statement comandoSQL = conexaoDados.createStatement(
+                                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                                    ResultSet.CONCUR_UPDATABLE
+                            );
+                            try{
+                                dadosDoSelect = comandoSQL.executeQuery(sql);
+                                if(dadosDoSelect != null && dadosDoSelect.next()){
+                                    escrevePnlExemplares();
+                                    exibirExemplares();
+                                }
+                                else {
+                                    JOptionPane.showMessageDialog(null, "Registros de exemplares não encontrados!");
                                 }
                             }
                             catch(SQLException exception){
@@ -133,10 +197,13 @@ public class FrameBib extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         try {
                             if (dadosDoSelect.previous()) {
-                                exibirLivros();
+                                switch(estado){
+                                    case LIVROS: exibirLivros(); break;
+                                    case EXEMPLARES: exibirExemplares(); break;
+                                }
                             }
                             else {
-                                JOptionPane.showMessageDialog(null, "Não achou Registro anterior!");
+                                JOptionPane.showMessageDialog(null, "Não achou registro anterior!");
                             }
                         }
                         catch (SQLException ex) {
@@ -152,7 +219,10 @@ public class FrameBib extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         try {
                             if (dadosDoSelect.next()) {
-                                exibirLivros();
+                                switch(estado){
+                                    case LIVROS: exibirLivros(); break;
+                                    case EXEMPLARES: exibirExemplares(); break;
+                                }
                             }
                             else {
                                 JOptionPane.showMessageDialog(null, "Não achou próximo registro!");
@@ -164,7 +234,9 @@ public class FrameBib extends JFrame {
                     }
                 }
         );
-        btnBusca.addActionListener(new ActionListener() {
+
+        btnBusca.addActionListener(
+                new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try
@@ -180,7 +252,7 @@ public class FrameBib extends JFrame {
                     }
                     if (!achou)
                     {
-                        JOptionPane.showMessageDialog(null, "Registro não encontrado!");
+                        JOptionPane.showMessageDialog(null, "Livro não encontrado!");
                         dadosDoSelect.absolute(posicaoAnterior);
                     }
                     exibirLivros();
@@ -191,6 +263,7 @@ public class FrameBib extends JFrame {
                 }
             }
         });
+
         btnIncluir.addActionListener(
                 new ActionListener()
                 {
@@ -209,11 +282,12 @@ public class FrameBib extends JFrame {
                         }
                         catch (SQLException ex)
                         {
-                            System.out.println(ex.getMessage());
+                            out.println(ex.getMessage());
                         }
                     }
                 }
         );
+
         btnExcluir.addActionListener(
                 new ActionListener() {
                     @Override
@@ -232,11 +306,12 @@ public class FrameBib extends JFrame {
                         }
                         catch (SQLException ex)
                         {
-                            System.out.println(ex.getMessage());
+                            out.println(ex.getMessage());
                         }
                     }
                 }
         );
+
         btnAlterar.addActionListener(
                 new ActionListener()
                 {
@@ -253,14 +328,14 @@ public class FrameBib extends JFrame {
                         }
                         catch (SQLException ex)
                         {
-                            System.out.println(ex.getMessage());
+                            out.println(ex.getMessage());
                         }
                     }
                 }
         );
     }
 
-    private static void preencherDados() {
+    private static void preencherBibliotecas() {
         String sql = "SELECT * FROM SisBib.Biblioteca order by idBiblioteca";
         try {
             Statement comandoSQL = conexaoDados.createStatement(
@@ -273,7 +348,7 @@ public class FrameBib extends JFrame {
                     while (dadosDoSelect.next()) {
                         exibirBibilotecas();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Registro não encontrado!");
+                    JOptionPane.showMessageDialog(null, "Bibliotecas não encontradas!");
                 }
             }
             catch (SQLException ex) {
@@ -298,7 +373,7 @@ public class FrameBib extends JFrame {
     }
 
     //tem que ajeitar isso aqui
-    private static void escrevePnl(){
+    private static void escrevePnlLivros(){
         pnlLivros.add(lbCodLivro);
         pnlLivros.add(lbTitulo);
         pnlLivros.add(lbIdAutor);
@@ -307,14 +382,7 @@ public class FrameBib extends JFrame {
         pnlLivros.add(txtTitulo);
         pnlLivros.add(txtIdAutor);
         pnlLivros.add(txtIdArea);
-        pnlNavegacao.add(btnAnterior);
-        pnlNavegacao.add(btnProximo);
-        pnlNavegacao.add(btnBusca);
-        pnlNavegacao.add(btnIncluir);
-        pnlNavegacao.add(btnExcluir);
-        pnlNavegacao.add(btnAlterar);
         pnlLivros.setLayout(new GridLayout(2, 4));
-        pnlNavegacao.setLayout(new GridLayout(1, 2));
         pnlConteudo.add(pnlLivros, BorderLayout.CENTER);
         pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
         cntForm.remove(pnlConteudo);
@@ -322,10 +390,38 @@ public class FrameBib extends JFrame {
     }
 
     private static void exibirLivros() throws SQLException{
-        txtCodLivro.setText(dadosDoSelect.getString("codLivro"));
-        txtTitulo.setText(dadosDoSelect.getString("titulo"));
-        txtIdAutor.setText(dadosDoSelect.getString("idAutor"));
-        txtIdArea.setText(dadosDoSelect.getString("idArea"));
-        cntForm.revalidate();
+        if(!dadosDoSelect.rowDeleted()){
+            txtCodLivro.setText(dadosDoSelect.getString("codLivro"));
+            txtTitulo.setText(dadosDoSelect.getString("titulo"));
+            txtIdAutor.setText(dadosDoSelect.getString("idAutor"));
+            txtIdArea.setText(dadosDoSelect.getString("idArea"));
+            cntForm.revalidate();
+        }
+    }
+
+    private static void escrevePnlExemplares(){
+        pnlExemplares.add(lbIdExemplar);
+        pnlExemplares.add(lbIdBiblioteca);
+        pnlExemplares.add(lbCodLivro);
+        pnlExemplares.add(lbNumeroExemplar);
+        pnlExemplares.add(txtIdExemplar);
+        pnlExemplares.add(txtIdBiblioteca);
+        pnlExemplares.add(txtCodLivro);
+        pnlExemplares.add(txtNumeroExemplar);
+        pnlExemplares.setLayout(new GridLayout(2,4));
+        pnlConteudo.add(pnlExemplares, BorderLayout.CENTER);
+        pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
+        cntForm.remove(pnlConteudo);
+        cntForm.add(pnlConteudo, BorderLayout.CENTER);
+    }
+
+    private static void exibirExemplares() throws SQLException{
+        if(!dadosDoSelect.rowDeleted()){
+            txtIdExemplar.setText(dadosDoSelect.getString("idExemplar"));
+            txtIdBiblioteca.setText(dadosDoSelect.getString("idBiblioteca"));
+            txtCodLivro.setText(dadosDoSelect.getString("codLivro"));
+            txtNumeroExemplar.setText(dadosDoSelect.getString("numeroExemplar"));
+            cntForm.revalidate();
+        }
     }
 }
