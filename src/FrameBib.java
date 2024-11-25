@@ -243,6 +243,13 @@ public class FrameBib extends JFrame {
                                         dadosDoSelect.updateDate("dataEmprestimo", Date.valueOf(txtDataEmprestimo.getText()));
                                         dadosDoSelect.updateDate("devolucaoPrevista", Date.valueOf(txtDevolucaoPrevista.getText()));
                                         dadosDoSelect.updateRow();
+                                        //sql = "INSERT INTO SisBib.Emprestimo VALUES (?,?,?,?)";
+                                        //PreparedStatement dados = comandoSQL.prepareStatement(sql);
+                                        //dados.setInt(1, Integer.parseInt(txtIdLeitor.getText()));
+                                        //dados.setInt(2, Integer.parseInt(txtIdExemplar.getText()));
+                                        //dados.setDate(3,  Date.valueOf(txtDataEmprestimo.getText()));
+                                        //dados.setDate(4, Date.valueOf(txtDevolucaoPrevista.getText()));
+                                        //dados.executeUpdate();
                                         JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
                                     }
                                     catch (SQLException ex){
