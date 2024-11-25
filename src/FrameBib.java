@@ -166,7 +166,7 @@ public class FrameBib extends JFrame {
                             try{
                                 dadosDoSelect = comandoSQL.executeQuery(sql);
                                 if (dadosDoSelect != null && dadosDoSelect.next()) {
-                                    FrameExemplares Exemplares = new FrameExemplares(dadosDoSelect);
+                                    FrameExemplares Exemplares = new FrameExemplares(dadosDoSelect, conexaoDados);
                                     FrameBib.this.setVisible(false);
                                     Exemplares.setLocationRelativeTo(null);
                                     Exemplares.addWindowListener(
