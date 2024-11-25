@@ -235,8 +235,10 @@ public class FrameBib extends JFrame {
                                 }
                                 if(achou){
                                     try{
+                                        sql = "SELECT * FROM SisBib.Emprestimo";
+                                        dadosDoSelect = comandoSQL.executeQuery(sql);
                                         dadosDoSelect.moveToInsertRow();
-                                        dadosDoSelect.updateString("idLeitor", txtIdLeitor.getText());
+                                        dadosDoSelect.updateString("idLeitor",txtIdLeitor.getText());
                                         dadosDoSelect.updateString("idExemplar", txtIdExemplar.getText());
                                         dadosDoSelect.updateString("dataEmprestimo", txtDataEmprestimo.getText());
                                         dadosDoSelect.updateString("devolucaoPrevista", txtDevolucaoPrevista.getText());
@@ -361,12 +363,12 @@ public class FrameBib extends JFrame {
         pnlEmprestimo.add(lbIdLeitor);          //1,1
         pnlEmprestimo.add(lbIdExemplar);        //1,2
         pnlEmprestimo.add(lbDataEmprestimo);    //1,3
-        pnlEmprestimo.add(lbDevolucaoPrevista); //1,4
+        pnlEmprestimo.add(lbDevolucaoPrevista);
+        pnlEmprestimo.add(vazio);               //3,1//1,4
         pnlEmprestimo.add(txtIdLeitor);         //2,1
         pnlEmprestimo.add(txtIdExemplar);       //2,2
         pnlEmprestimo.add(txtDataEmprestimo);   //2,3
         pnlEmprestimo.add(txtDevolucaoPrevista);//2,4
-//        pnlEmprestimo.add(vazio);               //3,1
 //        pnlEmprestimo.add(vazio);               //3,2
 //        pnlEmprestimo.add(vazio);               //3,3
         pnlEmprestimo.add(btnIncluir);          //3,4
