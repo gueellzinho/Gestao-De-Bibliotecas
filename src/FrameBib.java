@@ -214,7 +214,47 @@ public class FrameBib extends JFrame {
                     }
                 }
         );
+
+        btnDevolucoes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String sql = "select * from SisBib.Exemplar where idBiblioteca = " + idBibliotecaEscolhida + "order by idExemplar";
+                try{
+                    Statement comandoSQL = conexaoDados.createStatement(
+                            ResultSet.TYPE_SCROLL_SENSITIVE,
+                            ResultSet.CONCUR_UPDATABLE
+                    );
+                    try{
+                        dadosDoSelect = comandoSQL.executeQuery(sql);
+                        if (dadosDoSelect != null && dadosDoSelect.next()) {
+                            FrameDevolucao Devolucao = new FrameDevolucao(conexaoDados, idBibliotecaEscolhida);
+                            FrameBib.this.setVisible(false);
+                            Devolucao.setLocationRelativeTo(null);
+                            Devolucao.addWindowListener(
+                                    new WindowAdapter() {
+                                        @Override
+                                        public void windowClosing(WindowEvent e) {
+                                            FrameBib.this.setVisible(true);
+                                            Devolucao.dispose();
+                                        }
+                                    }
+                            );
+                            Devolucao.setVisible(true);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Registros de livros não encontrados!");
+                        }
+
+                    } catch(SQLException exception){
+                        exception.printStackTrace();
+                    }
+                }
+                catch(SQLException exception){
+                    exception.printStackTrace();
+                }
+            }
+        });
     }
+
 
     private static void preencherBibliotecas() {
         String sql = "SELECT * FROM SisBib.Biblioteca order by idBiblioteca";
