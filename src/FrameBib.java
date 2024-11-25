@@ -238,11 +238,11 @@ public class FrameBib extends JFrame {
                                         sql = "SELECT * FROM SisBib.Emprestimo";
                                         dadosDoSelect = comandoSQL.executeQuery(sql);
                                         dadosDoSelect.moveToInsertRow();
-                                        dadosDoSelect.updateString("idLeitor",txtIdLeitor.getText());
-                                        dadosDoSelect.updateString("idExemplar", txtIdExemplar.getText());
-                                        dadosDoSelect.updateString("dataEmprestimo", txtDataEmprestimo.getText());
-                                        dadosDoSelect.updateString("devolucaoPrevista", txtDevolucaoPrevista.getText());
-                                        dadosDoSelect.insertRow();
+                                        dadosDoSelect.updateInt("idLeitor",Integer.parseInt(txtIdLeitor.getText()));
+                                        dadosDoSelect.updateInt("idExemplar", Integer.parseInt(txtIdExemplar.getText()));
+                                        dadosDoSelect.updateDate("dataEmprestimo", Date.valueOf(txtDataEmprestimo.getText()));
+                                        dadosDoSelect.updateDate("devolucaoPrevista", Date.valueOf(txtDevolucaoPrevista.getText()));
+                                        dadosDoSelect.updateRow();
                                         JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
                                     }
                                     catch (SQLException ex){
