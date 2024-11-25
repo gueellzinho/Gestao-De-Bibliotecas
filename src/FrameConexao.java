@@ -7,9 +7,7 @@ import java.awt.event.WindowEvent;
 import java.sql.*;
 
 public class FrameConexao extends JFrame  {
-    private static JTextField txtServidor;
-    private static JTextField txtBD;
-    private static JTextField txtUser;
+    private static JTextField txtServidor, txtBD, txtUser;
     private static JPasswordField txtPassword;
     static private Connection conexaoDados = null;
     private static JButton btnConnect;
@@ -18,7 +16,7 @@ public class FrameConexao extends JFrame  {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void run() {
+            public void run(){
                 form = new FrameConexao();
                 form.setLocationRelativeTo(null);
                 form.addWindowListener(

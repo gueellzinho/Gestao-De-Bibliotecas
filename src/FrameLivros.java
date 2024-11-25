@@ -11,7 +11,6 @@ import static java.lang.System.out;
 public class FrameLivros extends JFrame {
 
     private static Container cntForm;
-    private static JLabel lbCodLivro, lbTitulo, lbIdAutor, lbIdArea;
     private static JButton btnAnterior, btnProximo, btnBusca, btnIncluir, btnExcluir, btnAlterar;
     private static ResultSet dadosDoSelect;
     private static JPanel pnlNavegacao, pnlConteudo, pnlLivros;
@@ -23,10 +22,6 @@ public class FrameLivros extends JFrame {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         pnlLivros   = new JPanel();
-        lbCodLivro  = new JLabel("Código Livro");
-        lbTitulo    = new JLabel("Título");
-        lbIdAutor   = new JLabel("ID Autor");
-        lbIdArea    = new JLabel("ID Área");
         txtCodLivro = new JTextField();
         txtTitulo   = new JTextField();
         txtIdAutor  = new JTextField();
@@ -55,7 +50,19 @@ public class FrameLivros extends JFrame {
 
         cntForm = getContentPane();
         cntForm.setLayout(new BorderLayout());
-        escrevePnlLivros();
+
+        pnlLivros.add(new JLabel("Código Livro"));
+        pnlLivros.add(new JLabel("Título"));
+        pnlLivros.add(new JLabel("ID Autor"));
+        pnlLivros.add(new JLabel("ID Área"));
+        pnlLivros.add(txtCodLivro);
+        pnlLivros.add(txtTitulo);
+        pnlLivros.add(txtIdAutor);
+        pnlLivros.add(txtIdArea);
+        pnlLivros.setLayout(new GridLayout(2, 4));
+        pnlConteudo.add(pnlLivros, BorderLayout.CENTER);
+        pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
+        cntForm.add(pnlConteudo, BorderLayout.CENTER);
         exibirLivros();
 
         btnAnterior.addActionListener(
@@ -196,18 +203,7 @@ public class FrameLivros extends JFrame {
         );
     }
     private static void escrevePnlLivros(){
-        pnlLivros.add(lbCodLivro);
-        pnlLivros.add(lbTitulo);
-        pnlLivros.add(lbIdAutor);
-        pnlLivros.add(lbIdArea);
-        pnlLivros.add(txtCodLivro);
-        pnlLivros.add(txtTitulo);
-        pnlLivros.add(txtIdAutor);
-        pnlLivros.add(txtIdArea);
-        pnlLivros.setLayout(new GridLayout(2, 4));
-        pnlConteudo.add(pnlLivros, BorderLayout.CENTER);
-        pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
-        cntForm.add(pnlConteudo, BorderLayout.CENTER);
+
     }
 
     private static void exibirLivros() throws SQLException {

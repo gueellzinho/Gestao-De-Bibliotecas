@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -16,7 +17,7 @@ public class FrameExemplares extends JFrame {
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
 
-    public FrameExemplares(ResultSet dados) throws SQLException {
+    public FrameExemplares(ResultSet dados, Connection conexaoDados) throws SQLException {
         setTitle("Manutenção de Exemplares");
         setSize(600, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -48,10 +49,6 @@ public class FrameExemplares extends JFrame {
         pnlNavegacao.setLayout(new GridLayout(1, 2));
 
         pnlExemplares       = new JPanel();
-        lbIdExemplar        = new JLabel("ID Exemplar");
-        lbIdBiblioteca      = new JLabel("ID Biblioteca");
-        lbCodLivro          = new JLabel("Código Livro");
-        lbNumeroExemplar    = new JLabel("Número Exemplar");
         txtIdExemplar       = new JTextField();
         txtIdBiblioteca     = new JTextField();
         txtCodLivro         = new JTextField();
@@ -60,7 +57,19 @@ public class FrameExemplares extends JFrame {
         pnlConteudo = new JPanel();
         pnlConteudo.setLayout(new GridLayout(2, 1));
 
-        escrevePnlExemplares();
+        pnlExemplares.add(new JLabel("ID Exemplar"));
+        pnlExemplares.add(new JLabel("ID Biblioteca"));
+        pnlExemplares.add(new JLabel("Código Livro"));
+        pnlExemplares.add(new JLabel("Número Exemplar"));
+        pnlExemplares.add(txtIdExemplar);
+        pnlExemplares.add(txtIdBiblioteca);
+        pnlExemplares.add(txtCodLivro);
+        pnlExemplares.add(txtNumeroExemplar);
+        pnlExemplares.setLayout(new GridLayout(2,4));
+        pnlConteudo.add(pnlExemplares, BorderLayout.CENTER);
+        pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
+        cntForm.remove(pnlConteudo);
+        cntForm.add(pnlConteudo, BorderLayout.CENTER);
         exibirExemplares();
 
         btnAnterior.addActionListener(
@@ -113,12 +122,12 @@ public class FrameExemplares extends JFrame {
                             boolean achou = false;
                             while (! achou && dadosDoSelect.next())
                             {
-                                if (dadosDoSelect.getString("codLivro").equals(chaveProcurada))
+                                if (dadosDoSelect.getString("idExemplar").equals(chaveProcurada))
                                     achou = true;
                             }
                             if (!achou)
                             {
-                                JOptionPane.showMessageDialog(null, "Livro não encontrado!");
+                                JOptionPane.showMessageDialog(null, "Exemplar não encontrado!");
                                 dadosDoSelect.absolute(posicaoAnterior);
                             }
                             exibirExemplares();
@@ -138,12 +147,13 @@ public class FrameExemplares extends JFrame {
                     {
                         try
                         {
-                            dadosDoSelect.moveToInsertRow();
-                            dadosDoSelect.updateString("idExemplar", txtIdExemplar.getText());
-                            dadosDoSelect.updateString("idBiblioteca", txtIdBiblioteca.getText());
-                            dadosDoSelect.updateString("codLivro", txtCodLivro.getText());
-                            dadosDoSelect.updateString("numeroExemplar", txtNumeroExemplar.getText());
-                            dadosDoSelect.insertRow();
+                            String sql = "insert into SisBib.Exemplar(idBiblioteca, codLivro, numeroExemplar)" +
+                                         "values(?, ?, ?)";
+                            PreparedStatement dados = conexaoDados.prepareStatement(sql);
+                            dados.setInt(1, Integer.parseInt(txtIdBiblioteca.getText()));
+                            dados.setString(2, txtCodLivro.getText());
+                            dados.setInt(3, Integer.parseInt(txtNumeroExemplar.getText()));
+                            dados.execute();
                             JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
                         }
                         catch (SQLException ex)
@@ -199,22 +209,6 @@ public class FrameExemplares extends JFrame {
                     }
                 }
         );
-    }
-
-    private static void escrevePnlExemplares(){
-        pnlExemplares.add(lbIdExemplar);
-        pnlExemplares.add(lbIdBiblioteca);
-        pnlExemplares.add(lbCodLivro);
-        pnlExemplares.add(lbNumeroExemplar);
-        pnlExemplares.add(txtIdExemplar);
-        pnlExemplares.add(txtIdBiblioteca);
-        pnlExemplares.add(txtCodLivro);
-        pnlExemplares.add(txtNumeroExemplar);
-        pnlExemplares.setLayout(new GridLayout(2,4));
-        pnlConteudo.add(pnlExemplares, BorderLayout.CENTER);
-        pnlConteudo.add(pnlNavegacao, BorderLayout.PAGE_END);
-        cntForm.remove(pnlConteudo);
-        cntForm.add(pnlConteudo, BorderLayout.CENTER);
     }
 
     private static void exibirExemplares() throws SQLException{
