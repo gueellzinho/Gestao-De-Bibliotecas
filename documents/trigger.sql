@@ -9,7 +9,7 @@ begin
 	select @devolucao = devolucaoEfetiva from SisBib.Emprestimo where idExemplar = @idExemplar
 	if @devolucao is null
 	begin
-		print 'Esse exemplar ainda não foi devolvido, não será possível fazer o empréstimo'
+		throw 50001, 'Esse exemplar ainda não foi devolvido, não será possível fazer o empréstimo', 1
 		rollback transaction
 	end
 	else

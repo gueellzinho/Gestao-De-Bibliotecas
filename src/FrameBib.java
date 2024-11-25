@@ -198,72 +198,22 @@ public class FrameBib extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        preencherEmprestimo();
+                        FrameEmprestimos Emprestimos = new FrameEmprestimos(conexaoDados, idBibliotecaEscolhida);
+                        FrameBib.this.setVisible(false);
+                        Emprestimos.setLocationRelativeTo(null);
+                        Emprestimos.addWindowListener(
+                                new WindowAdapter() {
+                                    @Override
+                                    public void windowClosing(WindowEvent e) {
+                                        FrameBib.this.setVisible(true);
+                                        Emprestimos.dispose();
+                                    }
+                                }
+                        );
+                        Emprestimos.setVisible(true);
                     }
                 }
         );
-
-        tpEmprestimo.addChangeListener(
-                new ChangeListener(){
-                    @Override
-                    public void stateChanged(ChangeEvent e){
-                        preencherEmprestimo();
-                    }
-        });
-
-        btnIncluir.addActionListener(
-                new ActionListener()
-                {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        String sql = "select * from SisBib.Exemplar where idBiblioteca = " + idBibliotecaEscolhida;
-                        try{
-                            Statement comandoSQL = conexaoDados.createStatement(
-                                    ResultSet.TYPE_SCROLL_SENSITIVE,
-                                    ResultSet.CONCUR_UPDATABLE
-                            );
-                            try{
-                                dadosDoSelect = comandoSQL.executeQuery(sql);
-                                String exemplarProcurado = txtIdExemplar.getText();
-                                boolean achou = false;
-                                while(dadosDoSelect.next() && !achou){
-                                    String exemplarAtual = dadosDoSelect.getString("idExemplar");
-                                    if(exemplarProcurado.equals(exemplarAtual)){
-                                        achou = true;
-                                    }
-                                }
-                                if(achou){
-                                    try{
-                                        sql = "insert into SisBib.Emprestimo(idLeitor, idExemplar, dataEmprestimo, devolucaoPrevista)" +
-                                                "values(?, ?, ?, ?)";
-                                        PreparedStatement dados = conexaoDados.prepareStatement(sql);
-                                        dados.setInt(1, Integer.parseInt(txtIdLeitor.getText()));
-                                        dados.setInt(2, Integer.parseInt(txtIdExemplar.getText()));
-                                        dados.setDate(3,  Date.valueOf(txtDataEmprestimo.getText()));
-                                        dados.setDate(4, Date.valueOf(txtDevolucaoPrevista.getText()));
-                                        dados.execute();
-                                        JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
-                                    }
-                                    catch (SQLException ex){
-                                        JOptionPane.showMessageDialog(null, ex.getMessage());
-                                    }
-                                }
-                                else{
-                                    JOptionPane.showMessageDialog(null, "Exemplar não encontrado na biblioteca!");
-                                }
-                            }
-                            catch(SQLException exception){
-                                exception.printStackTrace();
-                            }
-                        }
-                        catch(SQLException exception){
-                            exception.printStackTrace();
-                        }
-                    }
-                }
-        );
-
     }
 
     private static void preencherBibliotecas() {
@@ -291,33 +241,6 @@ public class FrameBib extends JFrame {
         }
     }
 
-    private static void preencherEmprestimo(){
-        if(tpEmprestimo.getSelectedIndex() == 0){
-            escrevePnlEmprestimos();
-        }
-        else if(tpEmprestimo.getSelectedIndex() == 1){
-            String sql = "select * from SisBib.AtrasosLivros";
-            try{
-                Statement comandoSQL = conexaoDados.createStatement(
-                        ResultSet.TYPE_SCROLL_SENSITIVE,
-                        ResultSet.CONCUR_UPDATABLE
-                );
-                try{
-                    dadosDoSelect = comandoSQL.executeQuery(sql);
-                    if(dadosDoSelect != null && dadosDoSelect.next()){
-                        exibirAtrasos();
-                    }
-                }
-                catch(SQLException exception){
-                    exception.printStackTrace();
-                }
-            }
-            catch(SQLException exception){
-                exception.printStackTrace();
-            }
-        }
-    }
-
     static private void exibirBibilotecas() throws SQLException
     {
         if (!dadosDoSelect.rowDeleted())
@@ -328,54 +251,5 @@ public class FrameBib extends JFrame {
             txtBib.setText(txtIdBib + " - "+ txtNomeBib);
             cbxBiblioteca.addItem(txtBib.getText());
         }
-    }
-
-    private static void exibirAtrasos() throws SQLException{
-        String[] colunas = {"Código Livro", "Titulo", "ID Leitor", "Nome Leitor", "ID Exemplar", "Devolucao Prevista", "Multa"};
-        dadosDoSelect.last();
-        int totalRegistros = dadosDoSelect.getRow();
-        dadosDoSelect.beforeFirst();
-        Object[][] dadosColunas = new Object[totalRegistros][7];
-        int  indice = 0;
-        while(dadosDoSelect.next()){
-            String codLivro          = dadosDoSelect.getString("codLivro");
-            String titulo            = dadosDoSelect.getString("titulo");
-            String idLeitor          = dadosDoSelect.getString("idLeitor");
-            String nomeLeitor        = dadosDoSelect.getString("nome");
-            String idExemplar        = dadosDoSelect.getString("idExemplar");
-            String devolucaoPrevista = dadosDoSelect.getString("devolucaoPrevista");
-            String multa             = dadosDoSelect.getString("Multa");
-            dadosColunas[indice][0] = codLivro;
-            dadosColunas[indice][1] = titulo;
-            dadosColunas[indice][2] = idLeitor;
-            dadosColunas[indice][3] = nomeLeitor;
-            dadosColunas[indice][4] = idExemplar;
-            dadosColunas[indice][5] = devolucaoPrevista;
-            dadosColunas[indice][6] = multa;
-            indice++;
-        }
-        tabAtrasos = new JTable(dadosColunas, colunas);
-        tabAtrasos.enable(false);
-        JScrollPane barraRolagem = new JScrollPane(tabAtrasos);
-        pnlAtrasos.add(barraRolagem, BorderLayout.CENTER);
-    }
-
-    private static void escrevePnlEmprestimos(){
-        pnlEmprestimo.add(lbIdLeitor);          //1,1
-        pnlEmprestimo.add(lbIdExemplar);        //1,2
-        pnlEmprestimo.add(lbDataEmprestimo);    //1,3
-        pnlEmprestimo.add(lbDevolucaoPrevista);
-        pnlEmprestimo.add(vazio);               //3,1//1,4
-        pnlEmprestimo.add(txtIdLeitor);         //2,1
-        pnlEmprestimo.add(txtIdExemplar);       //2,2
-        pnlEmprestimo.add(txtDataEmprestimo);   //2,3
-        pnlEmprestimo.add(txtDevolucaoPrevista);//2,4
-//        pnlEmprestimo.add(vazio);               //3,2
-//        pnlEmprestimo.add(vazio);               //3,3
-        pnlEmprestimo.add(btnIncluir);          //3,4
-        pnlConteudo.setLayout(new GridLayout(1, 1));
-        pnlConteudo.add(tpEmprestimo, BorderLayout.CENTER);
-        cntForm.add(pnlConteudo);
-        cntForm.revalidate();
     }
 }
