@@ -243,11 +243,10 @@ public class FrameBib extends JFrame {
                                         dados.setDate(3,  Date.valueOf(txtDataEmprestimo.getText()));
                                         dados.setDate(4, Date.valueOf(txtDevolucaoPrevista.getText()));
                                         dados.execute();
-                                        JOptionPane.showMessageDialog(null, dados.getResultSet());
                                         JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
                                     }
                                     catch (SQLException ex){
-                                        out.println(ex.getMessage());
+                                        JOptionPane.showMessageDialog(null, ex.getMessage());
                                     }
                                 }
                                 else{
