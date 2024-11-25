@@ -4,14 +4,18 @@ as
 declare @idExemplar int, @devolucao DateTime
 
 select @idExemplar = idExemplar from inserted
-if exists(select * from SisBib.Emprestimo where idExemplar = @idExemplar)
+if exists(select devolucaoEfetiva from SisBib.Emprestimo where idExemplar = @idExemplar)
 begin
 	select @devolucao = devolucaoEfetiva from SisBib.Emprestimo where idExemplar = @idExemplar
 	if @devolucao is null
 	begin
-		print 'Esse exemplar ainda n„o foi devolvido, n„o ser· possÌvel fazer o emprÈstimo'
+		print 'Esse exemplar ainda n√£o foi devolvido, n√£o ser√° poss√≠vel fazer o empr√©stimo'
 		rollback transaction
 	end
 	else
-		print 'EmprÈstimo concluÌdo'
+	begin
+		insert into SisBib.Emprestimo (idLeitor, idExemplar, dataEmprestimo, devolucaoPrevista)
+		select idLeitor, idExemplar, dataEmprestimo, devolucaoPrevista from inserted
+		print 'Empr√©stimo conclu√≠do'
+	end
 end
