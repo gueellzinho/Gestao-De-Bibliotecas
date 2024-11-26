@@ -226,7 +226,7 @@ public class FrameBib extends JFrame {
                     );
                     try{
                         dadosDoSelect = comandoSQL.executeQuery(sql);
-                        if (dadosDoSelect != null && dadosDoSelect.next()) {
+                        if (dadosDoSelect != null && dadosDoSelect.next()){
                             FrameDevolucao Devolucao = new FrameDevolucao(conexaoDados, idBibliotecaEscolhida);
                             FrameBib.this.setVisible(false);
                             Devolucao.setLocationRelativeTo(null);

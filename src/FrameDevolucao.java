@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,10 +11,11 @@ public class FrameDevolucao extends JFrame {
     private static JButton btnAlterar;
     private static JPanel pnlConteudo;
     private static Container cntForm;
-    private static JLabel lbIdLeitor, lbIdLivro, lbExemplar;
-    private static JTextField txtIdLeitor, txtIdLivro, txtExemplar;
+    private static JTextField txtIdLeitor, txtCodLivro, txtExemplar;
     private static int idBiblioteca;
     private static ResultSet dadosDoSelect;
+    private static String data;     //MUDA ISSO AQUI
+    private static String idExemplar;
 
     public FrameDevolucao(Connection dados, int idBib){
         setTitle("Manutenção de Devolução");
@@ -27,25 +26,25 @@ public class FrameDevolucao extends JFrame {
         cntForm.setLayout(new BorderLayout());
 
         btnAlterar   = new JButton("Alterar");
+        data = "2024-11-27";
         idBiblioteca = idBib;
 
         pnlConteudo = new JPanel();
-        lbIdLeitor  = new JLabel("Id Leitor");
-        lbIdLivro    = new JLabel("Id Livro");
-        lbExemplar   = new JLabel("Núm. Exemplar");
         txtIdLeitor = new JTextField();
-        txtIdLivro   = new JTextField();
+        txtCodLivro = new JTextField();
         txtExemplar  = new JTextField();
 
         cntForm = getContentPane();
         cntForm.setLayout(new BorderLayout());
 
-        pnlConteudo.add(lbIdLeitor);
-        pnlConteudo.add(lbIdLivro);
-        pnlConteudo.add(lbExemplar);
+        pnlConteudo.add(new JLabel("ID Leitor"));
+        pnlConteudo.add(new JLabel("Cod Livro"));
+        pnlConteudo.add(new JLabel("Núm. Exemplar"));
+        pnlConteudo.add(new JLabel(""));
         pnlConteudo.add(txtIdLeitor);
-        pnlConteudo.add(txtIdLivro);
+        pnlConteudo.add(txtCodLivro);
         pnlConteudo.add(txtExemplar);
+        pnlConteudo.add(btnAlterar);
         pnlConteudo.setLayout(new GridLayout(2, 4));
         cntForm.add(pnlConteudo, BorderLayout.CENTER);
 
@@ -55,10 +54,20 @@ public class FrameDevolucao extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (existeExemplar()){
-
+                    String sql = "update SisBib.Emprestimo set devolucaoEfetiva = ? where idExemplar = ?";
+                    try{
+                        PreparedStatement dados = conexaoDados.prepareStatement(sql);
+                        dados.setDate(1, Date.valueOf(data));
+                        dados.setInt(2, Integer.parseInt(idExemplar));
+                        dados.execute();
+                        JOptionPane.showMessageDialog(null, "Empréstimo alterado!");
+                    }
+                    catch(SQLException exception){
+                        exception.printStackTrace();
+                    }
                 }
                 else {
-                    out.println("Exemplar não existe na Biblioteca escolhida");
+                    JOptionPane.showMessageDialog(null, "Exemplar não existe na Biblioteca escolhida");
                 }
 
             }
@@ -66,14 +75,21 @@ public class FrameDevolucao extends JFrame {
     }
 
     public boolean existeExemplar(){
-        String sql = "Select * from Sisbib.exemplar where idexemplar = " + txtExemplar.getText();
+        String sql = "select idExemplar from SisBib.Exemplar where idBiblioteca = " + idBiblioteca +
+                " and codLivro = '" + txtCodLivro.getText() +
+                "' and numeroExemplar = " + txtExemplar.getText();
         try {
             Statement comandoSQL = conexaoDados.createStatement(
                     ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
-            try {
+            try{
                 dadosDoSelect = comandoSQL.executeQuery(sql);
-                return true;
+                if(dadosDoSelect.next()){
+                    idExemplar = dadosDoSelect.getString("idExemplar");
+                    return true;
+                }
+                else
+                    return false;
             }
             catch(SQLException exception){
                 exception.printStackTrace();
