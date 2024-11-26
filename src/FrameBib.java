@@ -8,8 +8,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
+import java.util.Properties;
 
+import org.jdatepicker.impl.*;
 import static java.lang.System.out;
 
 public class FrameBib extends JFrame {
@@ -25,6 +28,7 @@ public class FrameBib extends JFrame {
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
     private static int idBibliotecaEscolhida = 1;
+    private static Date dataAtual;
 
     //TODAS ESSA VARIAVEIS PARA BAIXO PODEM SUMIR QUANDO SEPARAR OS ARQUIVOS
     private static JLabel lbIdLeitor, lbIdExemplar, lbDataEmprestimo, lbDevolucaoPrevista, vazio;
@@ -92,6 +96,20 @@ public class FrameBib extends JFrame {
         txtIdExemplar        = new JTextField();
         txtDataEmprestimo    = new JTextField();
         txtDevolucaoPrevista = new JTextField();
+
+        JPanel pCalendario = new JPanel();
+        UtilDateModel model = new UtilDateModel();
+        Properties p = new Properties();
+        p.put("text.today", "Today");
+        p.put("text.month", "Month");
+        p.put("text.year", "Year");
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+        JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+        datePicker.setBounds(110, 100, 200, 25);
+        model.setSelected(true);
+        datePicker.setVisible(true);
+        pCalendario.add(datePicker);
+        cntForm.add(pCalendario,BorderLayout.EAST);
 
         vazio = new JLabel("");
 
@@ -225,9 +243,12 @@ public class FrameBib extends JFrame {
                             ResultSet.CONCUR_UPDATABLE
                     );
                     try{
+                        java.util.Date utilDate = (java.util.Date) model.getValue();
+                        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+                        String dataDevolucao = new SimpleDateFormat("yyyy-MM-dd").format(sqlDate);
                         dadosDoSelect = comandoSQL.executeQuery(sql);
                         if (dadosDoSelect != null && dadosDoSelect.next()){
-                            FrameDevolucao Devolucao = new FrameDevolucao(conexaoDados, idBibliotecaEscolhida);
+                            FrameDevolucao Devolucao = new FrameDevolucao(conexaoDados, idBibliotecaEscolhida, dataDevolucao);
                             FrameBib.this.setVisible(false);
                             Devolucao.setLocationRelativeTo(null);
                             Devolucao.addWindowListener(

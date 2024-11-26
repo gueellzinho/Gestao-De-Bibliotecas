@@ -14,10 +14,10 @@ public class FrameDevolucao extends JFrame {
     private static JTextField txtIdLeitor, txtCodLivro, txtExemplar;
     private static int idBiblioteca;
     private static ResultSet dadosDoSelect;
-    private static String data;     //MUDA ISSO AQUI
+    private static String data;
     private static String idExemplar;
 
-    public FrameDevolucao(Connection dados, int idBib){
+    public FrameDevolucao(Connection dados, int idBib, String dataDeDevolucao){
         setTitle("Manutenção de Devolução");
         setSize(600, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -26,7 +26,7 @@ public class FrameDevolucao extends JFrame {
         cntForm.setLayout(new BorderLayout());
 
         btnAlterar   = new JButton("Alterar");
-        data = "2024-11-27";
+        data = dataDeDevolucao;
         idBiblioteca = idBib;
 
         pnlConteudo = new JPanel();
