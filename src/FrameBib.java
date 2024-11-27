@@ -109,7 +109,7 @@ public class FrameBib extends JFrame {
         model.setSelected(true);
         datePicker.setVisible(true);
         pCalendario.add(datePicker);
-        cntForm.add(pCalendario,BorderLayout.EAST);
+        cntForm.add(pCalendario,BorderLayout.CENTER);
 
         vazio = new JLabel("");
 
