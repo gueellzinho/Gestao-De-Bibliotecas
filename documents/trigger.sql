@@ -1,21 +1,19 @@
-create trigger SisBib.emprestimo_tg on SisBib.Emprestimo
+create trigger emprestimo_tg on SisBib.Emprestimo
 instead of insert
 as
-declare @idExemplar int, @devolucao DateTime
-
-select @idExemplar = idExemplar from inserted
-if exists(select devolucaoEfetiva from SisBib.Emprestimo where idExemplar = @idExemplar)
 begin
-	select @devolucao = devolucaoEfetiva from SisBib.Emprestimo where idExemplar = @idExemplar
-	if @devolucao is null
+	declare @idExemplar int, @devolucaoEfetiva date;
+
+	select @idExemplar = idExemplar from inserted
+
+	select @devolucaoEfetiva  = devolucaoEfetiva from SisBib.Emprestimo
+	where idExemplar = @idExemplar and devolucaoEfetiva is null
+
+	if(@devolucaoEfetiva is null)
 	begin
-		throw 50001, 'Esse exemplar ainda não foi devolvido, não será possível fazer o empréstimo', 1
-		rollback transaction
+		insert into SisBib.Emprestimo(idLeitor, idExemplar, dataEmprestimo, devolucaoPrevista)
+		select idLeitor, idExemplar, dataEmprestimo, devolucaoPrevista from inserted
 	end
 	else
-	begin
-		insert into SisBib.Emprestimo (idLeitor, idExemplar, dataEmprestimo, devolucaoPrevista)
-		select idLeitor, idExemplar, dataEmprestimo, devolucaoPrevista from inserted
-		print 'Empréstimo concluído'
-	end
+		throw 50001, 'Esse exemplar ainda não foi devolvido, não será possível fazer o empréstimo', 1
 end
