@@ -180,8 +180,9 @@ public class FrameEmprestimos extends JFrame{
             indice++;
         }
         tabAtrasos = new JTable(dadosColunas, colunas);
-        tabAtrasos.enable(false);
+        tabAtrasos.setEnabled(false);
         JScrollPane barraRolagem = new JScrollPane(tabAtrasos);
+        pnlAtrasos.removeAll();
         pnlAtrasos.add(barraRolagem, BorderLayout.CENTER);
         cntForm.revalidate();
     }
