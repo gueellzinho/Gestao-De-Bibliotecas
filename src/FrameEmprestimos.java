@@ -6,16 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
-import static java.lang.System.out;
-
-
 public class FrameEmprestimos extends JFrame{
-    private static JTextField txtBib, txtIdLeitor, txtDevolucaoPrevista, txtIdExemplar, txtDataEmprestimo;
+    private static JTextField txtIdLeitor, txtDevolucaoPrevista, txtIdExemplar, txtDataEmprestimo;
     private static JButton btnIncluir;
     private static JPanel pnlEmprestimo, pnlAtrasos, pnlConteudo;
     private static JTabbedPane tpEmprestimo;
     private static JTable tabAtrasos;
-    private static JLabel lbIdLeitor, lbIdExemplar, lbDataEmprestimo, lbDevolucaoPrevista, vazio;
     static private Connection conexaoDados;
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
@@ -40,26 +36,20 @@ public class FrameEmprestimos extends JFrame{
         tpEmprestimo.add("Empréstimo", pnlEmprestimo);
         tpEmprestimo.add("Atrasos", pnlAtrasos);
         pnlEmprestimo.setLayout(new GridLayout(2, 4));
-        lbIdLeitor           = new JLabel("ID Leitor");
-        lbIdExemplar         = new JLabel("ID Exemplar");
-        lbDataEmprestimo     = new JLabel("Data Empréstimo");
-        lbDevolucaoPrevista  = new JLabel("Devolução Prevista");
         txtIdLeitor          = new JTextField();
         txtIdExemplar        = new JTextField();
         txtDataEmprestimo    = new JTextField();
         txtDevolucaoPrevista = new JTextField();
 
-        vazio = new JLabel("");
-
         btnIncluir   = new JButton("Incluir");
 
         pnlConteudo = new JPanel();
 
-        pnlEmprestimo.add(lbIdLeitor);
-        pnlEmprestimo.add(lbIdExemplar);
-        pnlEmprestimo.add(lbDataEmprestimo);
-        pnlEmprestimo.add(lbDevolucaoPrevista);
-        pnlEmprestimo.add(vazio);
+        pnlEmprestimo.add(new JLabel("ID Leitor"));
+        pnlEmprestimo.add(new JLabel("ID Exemplar"));
+        pnlEmprestimo.add(new JLabel("Data Empréstimo"));
+        pnlEmprestimo.add(new JLabel("Devolução Prevista"));
+        pnlEmprestimo.add(new JLabel(""));
         pnlEmprestimo.add(txtIdLeitor);
         pnlEmprestimo.add(txtIdExemplar);
         pnlEmprestimo.add(txtDataEmprestimo);
@@ -79,57 +69,59 @@ public class FrameEmprestimos extends JFrame{
         );
 
         btnIncluir.addActionListener(
-                new ActionListener()
-                {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        String sql = "select * from SisBib.Exemplar where idBiblioteca = " + idBibliotecaEscolhida;
+            new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e){
+                    if(existeExemplar()){
                         try{
-                            Statement comandoSQL = conexaoDados.createStatement(
-                                    ResultSet.TYPE_SCROLL_SENSITIVE,
-                                    ResultSet.CONCUR_UPDATABLE
-                            );
-                            try{
-                                dadosDoSelect = comandoSQL.executeQuery(sql);
-                                String exemplarProcurado = txtIdExemplar.getText();
-                                boolean achou = false;
-                                while(dadosDoSelect.next() && !achou){
-                                    String exemplarAtual = dadosDoSelect.getString("idExemplar");
-                                    if(exemplarProcurado.equals(exemplarAtual)){
-                                        achou = true;
-                                    }
-                                }
-                                if(achou){
-                                    try{
-                                        sql = "insert into SisBib.Emprestimo(idLeitor, idExemplar, dataEmprestimo, devolucaoPrevista)" +
-                                                "values(?, ?, ?, ?)";
-                                        PreparedStatement dados = conexaoDados.prepareStatement(sql);
-                                        dados.setInt(1, Integer.parseInt(txtIdLeitor.getText()));
-                                        dados.setInt(2, Integer.parseInt(txtIdExemplar.getText()));
-                                        dados.setDate(3,  Date.valueOf(txtDataEmprestimo.getText()));
-                                        dados.setDate(4, Date.valueOf(txtDevolucaoPrevista.getText()));
-                                        dados.execute();
-                                        JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
-                                    }
-                                    catch (SQLException ex){
-                                        JOptionPane.showMessageDialog(null, ex.getMessage());
-                                    }
-                                }
-                                else{
-                                    JOptionPane.showMessageDialog(null, "Exemplar não encontrado na biblioteca!");
-                                }
-                            }
-                            catch(SQLException exception){
-                                exception.printStackTrace();
-                            }
+                            String sql = "insert into SisBib.Emprestimo(idLeitor, idExemplar, dataEmprestimo, devolucaoPrevista)" +
+                                    "values(?, ?, ?, ?)";
+                            PreparedStatement dados = conexaoDados.prepareStatement(sql);
+                            dados.setInt(1, Integer.parseInt(txtIdLeitor.getText()));
+                            dados.setInt(2, Integer.parseInt(txtIdExemplar.getText()));
+                            dados.setDate(3,  Date.valueOf(txtDataEmprestimo.getText()));
+                            dados.setDate(4, Date.valueOf(txtDevolucaoPrevista.getText()));
+                            dados.execute();
+                            JOptionPane.showMessageDialog(null, "Inclusão bem sucedida!");
                         }
-                        catch(SQLException exception){
-                            exception.printStackTrace();
+                        catch (SQLException ex){
+                            JOptionPane.showMessageDialog(null, ex.getMessage());
                         }
                     }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Exemplar não encontrado na biblioteca!");
+                    }
                 }
+            }
         );
+    }
+
+    private static boolean existeExemplar(){
+        String sql = "select * from SisBib.Exemplar where idBiblioteca = " + idBibliotecaEscolhida;
+        boolean achou = false;
+        try{
+            Statement comandoSQL = conexaoDados.createStatement(
+                        ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE
+            );
+            try{
+                dadosDoSelect = comandoSQL.executeQuery(sql);
+                String exemplarProcurado = txtIdExemplar.getText();
+                while(dadosDoSelect.next() && !achou){
+                    String exemplarAtual = dadosDoSelect.getString("idExemplar");
+                    if(exemplarProcurado.equals(exemplarAtual))
+                        achou = true;
+                }
+            }
+            catch(SQLException exception){
+                exception.printStackTrace();
+            }
+        }
+        catch(SQLException exception){
+            exception.printStackTrace();
+        }
+        return achou;
     }
 
     private static void preencherAtrasos(){

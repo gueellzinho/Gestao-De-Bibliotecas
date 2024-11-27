@@ -1,7 +1,4 @@
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,27 +8,21 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
 import java.util.Properties;
-
 import org.jdatepicker.impl.*;
 import static java.lang.System.out;
 
 public class FrameBib extends JFrame {
-    private static  JMenuBar menuNavegacao;
-    //private static JDateChooser calCalendario;
-    private static JTextField txtBib, txtIdLeitor, txtDevolucaoPrevista, txtIdExemplar, txtDataEmprestimo;
-    private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes, btnIncluir;
+    private static JMenuBar menuNavegacao;
+    private static JTextField txtBib;
+    private static JButton btnLivros, btnExemplares, btnEmprestimos, btnDevolucoes;
     private static JComboBox cbxBiblioteca;
     private static JTabbedPane tpEmprestimo;
-    private static JTable tabAtrasos;
-    private static JPanel pnlNavegacao, pnlConteudo, pnlEmprestimo, pnlAtrasos;
+    private static JPanel pnlEmprestimo, pnlAtrasos;
     static private Connection conexaoDados;
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
     private static int idBibliotecaEscolhida = 1;
     private static Date dataAtual;
-
-    //TODAS ESSA VARIAVEIS PARA BAIXO PODEM SUMIR QUANDO SEPARAR OS ARQUIVOS
-    private static JLabel lbIdLeitor, lbIdExemplar, lbDataEmprestimo, lbDevolucaoPrevista, vazio;
 
     public FrameBib(Connection cnxDados){
         setTitle("Sistema de Biblioteca");
@@ -88,14 +79,6 @@ public class FrameBib extends JFrame {
         tpEmprestimo.add("Empréstimo", pnlEmprestimo);
         tpEmprestimo.add("Atrasos", pnlAtrasos);
         pnlEmprestimo.setLayout(new GridLayout(2, 4));
-        lbIdLeitor           = new JLabel("ID Leitor");
-        lbIdExemplar         = new JLabel("ID Exemplar");
-        lbDataEmprestimo     = new JLabel("Data Empréstimo");
-        lbDevolucaoPrevista  = new JLabel("Devolução Prevista");
-        txtIdLeitor          = new JTextField();
-        txtIdExemplar        = new JTextField();
-        txtDataEmprestimo    = new JTextField();
-        txtDevolucaoPrevista = new JTextField();
 
         JPanel pCalendario = new JPanel();
         UtilDateModel model = new UtilDateModel();
@@ -110,12 +93,6 @@ public class FrameBib extends JFrame {
         datePicker.setVisible(true);
         pCalendario.add(datePicker);
         cntForm.add(pCalendario,BorderLayout.CENTER);
-
-        vazio = new JLabel("");
-
-        btnIncluir   = new JButton("Incluir");
-
-        pnlConteudo = new JPanel();
 
         conexaoDados = cnxDados;
         preencherBibliotecas();

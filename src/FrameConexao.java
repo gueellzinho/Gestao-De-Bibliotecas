@@ -6,6 +6,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
 
+//Miguel Henrique Amorim Pereira - 24587
+//Miguel Lopes de Almeida - 24142
+
 public class FrameConexao extends JFrame  {
     private static JTextField txtServidor, txtBD, txtUser;
     private static JPasswordField txtPassword;

@@ -13,7 +13,6 @@ public class FrameExemplares extends JFrame {
     private static JTextField txtCodLivro, txtIdExemplar, txtIdBiblioteca, txtNumeroExemplar, txtTitulo, txtIdAutor, txtIdArea;
     private static JButton btnAnterior, btnProximo, btnBusca, btnIncluir, btnExcluir, btnAlterar;
     private static JPanel pnlExemplares, pnlNavegacao, pnlConteudo;
-    private static JLabel lbCodLivro,lbIdExemplar, lbIdBiblioteca, lbNumeroExemplar;
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
 
