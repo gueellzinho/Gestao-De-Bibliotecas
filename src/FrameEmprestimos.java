@@ -73,7 +73,7 @@ public class FrameEmprestimos extends JFrame{
                 new ChangeListener() {
                     @Override
                     public void stateChanged(ChangeEvent e) {
-                        preencherEmprestimo();
+                        preencherAtrasos();
                     }
                 }
         );
@@ -132,8 +132,7 @@ public class FrameEmprestimos extends JFrame{
         );
     }
 
-    private static void preencherEmprestimo(){
-        if(tpEmprestimo.getSelectedIndex() == 1){
+    private static void preencherAtrasos(){
             String sql = "select * from SisBib.AtrasosLivros";
             try{
                 Statement comandoSQL = conexaoDados.createStatement(
@@ -153,7 +152,6 @@ public class FrameEmprestimos extends JFrame{
             catch(SQLException exception){
                 exception.printStackTrace();
             }
-        }
         cntForm.revalidate();
     }
 
