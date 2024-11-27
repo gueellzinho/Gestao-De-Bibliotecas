@@ -193,7 +193,10 @@ public class FrameBib extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        FrameEmprestimos Emprestimos = new FrameEmprestimos(conexaoDados, idBibliotecaEscolhida);
+                        java.util.Date utilDate = (java.util.Date) model.getValue();
+                        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+                        String dataDevolucao = new SimpleDateFormat("yyyy-MM-dd").format(sqlDate);
+                        FrameEmprestimos Emprestimos = new FrameEmprestimos(conexaoDados, idBibliotecaEscolhida, dataDevolucao);
                         FrameBib.this.setVisible(false);
                         Emprestimos.setLocationRelativeTo(null);
                         Emprestimos.addWindowListener(

@@ -27,10 +27,12 @@ public class FrameConexao extends JFrame  {
                         {
                             public void windowClosing (WindowEvent e)
                             {
-                                try {
-                                    conexaoDados.close();
-                                } catch (SQLException ex) {
-                                    throw new RuntimeException(ex);
+                                if (conexaoDados != null) {
+                                    try {
+                                        conexaoDados.close();
+                                    } catch (SQLException ex) {
+                                        throw new RuntimeException(ex);
+                                    }
                                 }
                                 System.exit(0);
                             }
@@ -49,9 +51,9 @@ public class FrameConexao extends JFrame  {
         pnlCampos.setLayout(new GridLayout(5, 2));
         pnlCampos.setPreferredSize(new Dimension(410,150));
         txtServidor = new JTextField("regulus.cotuca.unicamp.br");
-        txtBD = new JTextField("BD24587");
-        txtUser  = new JTextField("BD24587");
-        txtPassword  = new JPasswordField("Miguel$PFC13579");
+        txtBD = new JTextField();
+        txtUser  = new JTextField();
+        txtPassword  = new JPasswordField();
         btnConnect = new JButton("Conectar");
         btnConnect.setPreferredSize(new Dimension(90,30));
 

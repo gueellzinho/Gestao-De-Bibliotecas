@@ -16,8 +16,9 @@ public class FrameEmprestimos extends JFrame{
     private static ResultSet dadosDoSelect;
     private static Container cntForm;
     private static int idBibliotecaEscolhida;
+    private static String data;
 
-    public FrameEmprestimos(Connection dados, int idBib){
+    public FrameEmprestimos(Connection dados, int idBib, String dataDevolucao){
         setTitle("Manutenção de Emprestimos");
         setSize(600, 300);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -26,6 +27,7 @@ public class FrameEmprestimos extends JFrame{
         cntForm.setLayout(new BorderLayout());
 
         btnIncluir   = new JButton("Incluir");
+        data = dataDevolucao;
 
         conexaoDados = dados;
         idBibliotecaEscolhida = idBib;
@@ -38,9 +40,10 @@ public class FrameEmprestimos extends JFrame{
         pnlEmprestimo.setLayout(new GridLayout(2, 4));
         txtIdLeitor          = new JTextField();
         txtIdExemplar        = new JTextField();
-        txtDataEmprestimo    = new JTextField();
+        txtDataEmprestimo    = new JTextField(data);
         txtDevolucaoPrevista = new JTextField();
 
+        txtDataEmprestimo.setEditable(false);
         btnIncluir   = new JButton("Incluir");
 
         pnlConteudo = new JPanel();
